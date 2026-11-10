@@ -556,7 +556,12 @@ function feedbackRows() {
       <td>${feedback ? escapeHTML(feedback.date) : '—'}</td>
       <td>${feedback ? `<span style="color:#d89d2c;letter-spacing:1px">${'★'.repeat(feedback.rating)}${'☆'.repeat(5 - feedback.rating)}</span><span style="color:#777b91;margin-left:6px">${feedback.rating}.0</span>` : '—'}</td>
       <td>${feedback ? statusBadge('received', 'Received') : statusBadge('pending', 'Awaiting response')}</td>
-      <td>${feedback ? `<button class="row-action" type="button" data-action="view-feedback" data-id="${escapeHTML(attendee.id)}">View & Cert</button>` : `<button class="row-action" type="button" data-action="remind-feedback" data-id="${escapeHTML(attendee.id)}">Send reminder ${icon('arrow')}</button>`}</td>
+      <td>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="row-action" type="button" data-action="preview-cert" data-id="${escapeHTML(attendee.id)}" title="Preview participant certificate PDF">Preview Certificate</button>
+          ${!feedback ? `<button class="row-action" type="button" data-action="remind-feedback" data-id="${escapeHTML(attendee.id)}" title="Send reminder to complete feedback">Reminder ${icon('arrow')}</button>` : ''}
+        </div>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -1341,52 +1346,28 @@ window.selectFeedbackModalAttendee = function(id) {
 
 // ----------------- E-CERTIFICATE DISPLAY MODAL -----------------
 function openCertificateModal(attendee, feedback) {
-  const certUrl = feedback && feedback.certUrl ? feedback.certUrl : `assets/certificates/Certificate_${attendee.id.replace(/[^a-zA-Z0-9_\-]/g, '_')}.pdf`;
+  const certUrl = `cert_generator.php?name=${encodeURIComponent(attendee.name)}`;
+  const downloadUrl = (feedback && feedback.certUrl) ? feedback.certUrl : certUrl;
+  
   openModal(`
     <div class="modal-header" style="border-bottom:0;padding-bottom:0;">
-      <div><span class="hero-badge" style="background:#e6f9eb;color:#13ae48;">✓ FEEDBACK VERIFIED & RECORDED</span></div>
+      <div>
+        <h2 class="modal-title" style="margin-bottom:4px;">Official Certificate Preview</h2>
+        <p class="modal-description" style="margin:0;">ISN Sports Nutrition Day 2026 Certificate &bull; <strong>${escapeHTML(attendee.name)}</strong></p>
+      </div>
       <button class="modal-close" type="button" aria-label="Close" onclick="closeModal()">&times;</button>
     </div>
-    <div class="modal-body" style="padding-top:0;">
-      <div style="background:#f4fbf6;border:1.5px solid #1fd75a;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#13ae48;font-weight:700;display:flex;justify-content:space-between;align-items:center;">
-        <span>✉️ Official E-Certificate PDF generated &amp; dispatched to: <strong>${escapeHTML(attendee.email || '')}</strong></span>
-        <a href="${certUrl}" target="_blank" download="Certificate_${escapeHTML(attendee.id)}.pdf" class="button button-primary" style="min-height:30px;padding:2px 12px;font-size:11px;">Download PDF ↗</a>
+    <div class="modal-body" style="padding:16px 20px;">
+      <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#1e40af;display:flex;justify-content:space-between;align-items:center;">
+        <span>Recipient: <strong>${escapeHTML(attendee.name)}</strong> (${escapeHTML(attendee.id)}) &bull; Signed by DR VELLAPANDIAN A/L PONNUSAMY</span>
+        <a href="${certUrl}" target="_blank" download="Certificate_${escapeHTML(attendee.id)}.pdf" class="button button-primary" style="min-height:28px;padding:2px 10px;font-size:11px;">Open in New Tab ↗</a>
       </div>
-      <!-- Personalized Certificate Layout -->
-      <div class="cert-canvas-frame" id="printable-cert">
-        <div class="cert-inner-border">
-          <div class="cert-header">
-            <img src="assets/brand/perform-snd-lockup.png" alt="PERFORM SND" />
-            <img src="assets/brand/isn-organiser-lockup.png" alt="ISN Organiser" />
-          </div>
-          <div class="cert-pre-title">INSTITUT SUKAN NEGARA (ISN) MALAYSIA</div>
-          <h2 class="cert-title">Certificate of Participation</h2>
-          <div class="cert-subtitle">This certificate is proudly awarded to</div>
-          <div class="cert-name">${escapeHTML(attendee.name)}</div>
-          <div style="margin-bottom:12px;">${teamBadge(attendee.team, attendee.teamName)} <span style="font-size:12px;color:var(--muted);margin-left:8px;">${attendee.institution ? escapeHTML(attendee.institution) + ' &bull; ' : ''}Reg ID: ${escapeHTML(attendee.id)}</span></div>
-          <p class="cert-body-text">
-            For active participation and completion of the session<br />
-            <strong>"Hydration and Performance Nutrition: Strategies and Practices"</strong><br />
-            held during <strong>ISN Sports Nutrition Day 2026</strong> on 11 November 2026.
-          </p>
-          <div class="cert-signatures">
-            <div class="cert-sig-block">
-              <div style="font-family:'Brush Script MT', cursive, sans-serif;font-size:22px;color:#11133f;height:32px;">Ahmad Faizal</div>
-              <div class="cert-sig-title">Head of Sports Nutrition</div>
-              <div class="cert-sig-org">Institut Sukan Negara</div>
-            </div>
-            <div class="cert-sig-block">
-              <div style="font-family:'Brush Script MT', cursive, sans-serif;font-size:22px;color:#11133f;height:32px;">Dr. Lim Jin</div>
-              <div class="cert-sig-title">Director of Performance</div>
-              <div class="cert-sig-org">PERFORM SND 2026</div>
-            </div>
-          </div>
-        </div>
+      <div style="width:100%;height:580px;border:1px solid var(--border-color);border-radius:8px;overflow:hidden;background:#525659;">
+        <iframe src="${certUrl}" style="width:100%;height:100%;border:none;" title="Certificate PDF Preview"></iframe>
       </div>
-      <div class="cert-actions">
+      <div class="cert-actions" style="margin-top:16px;display:flex;justify-content:flex-end;gap:10px;">
         <a href="${certUrl}" target="_blank" download="Certificate_${escapeHTML(attendee.id)}.pdf" class="button button-primary" style="display:inline-flex;align-items:center;gap:6px;">${icon('download','button-icon')}Download Official PDF</a>
-        <button class="button button-outline" type="button" onclick="window.print()">Print Layout</button>
-        <button class="button button-outline" type="button" onclick="closeModal()">Done</button>
+        <button class="button button-outline" type="button" onclick="closeModal()">Close</button>
       </div>
     </div>
   `, true);
@@ -1493,11 +1474,11 @@ async function handleClick(event) {
     return;
   }
 
-  if (action === 'view-feedback') {
+  if (action === 'preview-cert' || action === 'view-feedback') {
     const id = trigger.dataset.id;
     const attendee = attendees.find((a) => a.id === id);
     const feedback = feedbackFor(id);
-    if (attendee && feedback) openCertificateModal(attendee, feedback);
+    if (attendee) openCertificateModal(attendee, feedback);
     return;
   }
 

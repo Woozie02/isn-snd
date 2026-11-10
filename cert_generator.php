@@ -95,3 +95,23 @@ function generateParticipantCertificatePDF($name, $outputPath = '') {
 
     return $body;
 }
+
+// Direct HTTP preview support: e.g. cert_generator.php?name=DR+VELLAPANDIAN
+if (basename(__FILE__) === basename(isset($_SERVER['SCRIPT_FILENAME']) ? $_SERVER['SCRIPT_FILENAME'] : '')) {
+    $name = isset($_GET['name']) ? trim($_GET['name']) : '';
+    if ($name === '') {
+        $name = 'PARTICIPANT NAME';
+    }
+    $pdf = generateParticipantCertificatePDF($name);
+    if ($pdf) {
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="Certificate_Preview.pdf"');
+        header('Content-Length: ' . strlen($pdf));
+        echo $pdf;
+        exit;
+    } else {
+        http_response_code(500);
+        echo 'Failed to generate certificate preview.';
+        exit;
+    }
+}
