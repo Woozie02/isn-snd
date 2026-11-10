@@ -50,3 +50,4 @@ echo "Category breakdown:\n";
 foreach ($catCounts as $cc) {
     echo "- " . $cc['category'] . ": " . $cc['cnt'] . "\n";
 }
+

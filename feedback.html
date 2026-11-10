@@ -4,52 +4,75 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#11133f" />
-    <title>Workshop Feedback & E-Certificate | ISN Sports Nutrition Day 2026</title>
+    <title>Participant Feedback Form | ISN Sports Nutrition Day 2026</title>
     <link rel="icon" type="image/svg+xml" href="isn-symbol.svg" />
-    <link rel="stylesheet" href="styles.css?v=5" />
+    <link rel="stylesheet" href="styles.css?v=6" />
     <style>
       .feedback-portal-shell {
         min-height: 100vh;
-        background: #f6f7fa;
+        background: #f1f4f9;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 30px 16px 60px;
+        padding: 30px 16px 80px;
       }
       .feedback-card {
         background: #ffffff;
         border: 1.5px solid #d5d8e6;
         border-radius: 18px;
         box-shadow: 0 16px 40px rgba(17, 19, 63, .08);
-        max-width: 660px;
+        max-width: 680px;
         width: 100%;
-        overflow: visible;
       }
       .feedback-card-hero {
         background: linear-gradient(115deg, #11133f 0%, #1c205e 100%);
         color: #ffffff;
-        padding: 28px 24px;
+        padding: 32px 26px;
         text-align: center;
         border-top-left-radius: 17px;
         border-top-right-radius: 17px;
       }
       .feedback-card-body {
-        padding: 28px 24px 32px;
+        padding: 32px 26px 40px;
+      }
+      .section-header {
+        background: #f8fafc;
+        border-left: 4px solid #11133f;
+        padding: 10px 14px;
+        margin: 28px 0 16px;
+        border-radius: 0 8px 8px 0;
+      }
+      .section-header:first-of-type {
+        margin-top: 10px;
+      }
+      .section-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        color: #11133f;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: .03em;
       }
       .question-box {
         background: #fafbfe;
         border: 1.5px solid #e2e8f0;
         border-radius: 12px;
         padding: 16px 18px;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
       }
       .question-title {
         font-family: 'Manrope', sans-serif;
-        font-size: 14px;
-        font-weight: 800;
+        font-size: 13.5px;
+        font-weight: 700;
         color: var(--navy);
         margin: 0 0 10px;
         line-height: 1.45;
+      }
+      .question-title .required {
+        color: #ef4444;
+        margin-left: 3px;
+        font-weight: 900;
       }
       .scale-badge-row {
         display: flex;
@@ -58,6 +81,56 @@
         font-weight: 700;
         color: #64748b;
         margin-top: 6px;
+      }
+      .radio-pill-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+      }
+      .radio-pill {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #ffffff;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 10px 14px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--navy);
+        transition: all .15s ease;
+      }
+      .radio-pill input {
+        cursor: pointer;
+      }
+      .radio-pill:has(input:checked) {
+        border-color: #11133f;
+        background: #f1f4fb;
+        color: #11133f;
+      }
+      .rating-picker {
+        display: flex;
+        gap: 8px;
+      }
+      .rate-btn {
+        flex: 1;
+        height: 38px;
+        border: 1.5px solid #cbd5e1;
+        background: #ffffff;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--navy);
+        cursor: pointer;
+        transition: all .15s ease;
+      }
+      .rate-btn.selected {
+        background: #11133f;
+        color: #ffffff;
+        border-color: #11133f;
       }
       .attendee-badge-selected {
         background: #f0faf2;
@@ -73,9 +146,8 @@
         background: #e6f9eb;
         border: 2px solid #1fd75a;
         border-radius: 14px;
-        padding: 24px 20px;
+        padding: 28px 22px;
         text-align: center;
-        margin-bottom: 24px;
       }
     </style>
   </head>
@@ -87,107 +159,222 @@
             <img src="assets/brand/perform-snd-lockup.png" alt="PERFORM SND" style="height:32px;filter:brightness(0) invert(1);" />
             <img src="assets/brand/isn-organiser-lockup.png" alt="ISN" style="height:28px;filter:brightness(0) invert(1);" />
           </div>
-          <span class="hero-badge" style="background:rgba(255,255,255,.15);color:#fff;margin-bottom:8px;">11 NOV 2026 &bull; WORKSHOP EVALUATION</span>
-          <h1 style="color:#ffffff;font-size:22px;margin:8px 0 6px;font-family:'Manrope',sans-serif;font-weight:800;">Workshop Feedback Form</h1>
-          <p style="color:#c5c8e4;font-size:12px;margin:0;">"Hydration and Performance Nutrition: Strategies and Practices"</p>
+          <span class="hero-badge" style="background:rgba(255,255,255,.15);color:#fff;margin-bottom:8px;">ISN SPORTS NUTRITION DAY 2026</span>
+          <h1 style="color:#ffffff;font-size:22px;margin:8px 0 6px;font-family:'Manrope',sans-serif;font-weight:800;">Participant Feedback Form</h1>
+          <p style="color:#c5c8e4;font-size:12.5px;line-height:1.5;margin:0;max-width:540px;margin:0 auto;">
+            Thank you for participating in ISN Sports Nutrition Day 2026. Your feedback is valuable in helping us evaluate the program and improve future events.
+          </p>
         </div>
 
         <div class="feedback-card-body" id="portal-content">
-          <div id="feedback-form-container">
-            <h2 style="color:var(--navy);font-size:18px;margin-bottom:6px;">Participant Evaluation</h2>
-            <p style="color:var(--muted);font-size:12px;margin-bottom:20px;">
-              Please identify yourself by typing your name or phone number below. Your feedback helps ISN enhance future sports nutrition symposiums and immediately unlocks your official E-Certificate.
-            </p>
+          <form id="public-feedback-form">
+            <!-- Attendee Selection -->
+            <div class="autocomplete-wrap" style="position:relative;margin-bottom:22px;">
+              <label class="form-label" style="display:block;margin-bottom:6px;font-weight:800;">Identify Participant Record *</label>
+              <input type="text" id="attendee-name-input" class="form-input" placeholder="Start typing your full name or phone number..." autocomplete="off" required autofocus />
+              <input type="hidden" id="selected-attendee-id" name="attendeeId" required />
+              <div id="autocomplete-results" class="autocomplete-list" style="display:none;max-height:240px;"></div>
+              <div id="selected-badge-container" style="display:none;"></div>
+            </div>
 
-            <form id="public-feedback-form">
-              <!-- Autocomplete Attendee Input -->
-              <div class="autocomplete-wrap" style="position:relative;margin-bottom:22px;">
-                <label class="form-label" style="display:block;margin-bottom:6px;">Type Your Name or Phone Number *</label>
-                <input type="text" id="attendee-name-input" class="form-input" placeholder="Start typing name (e.g. Nurliyana, Hazizi, Arif...) or phone" autocomplete="off" required autofocus />
-                <input type="hidden" id="selected-attendee-id" name="attendeeId" required />
-                <div id="autocomplete-results" class="autocomplete-list" style="display:none;max-height:240px;"></div>
-                <div id="selected-badge-container" style="display:none;"></div>
+            <!-- SECTION 1: Participant Information -->
+            <div class="section-header"><h3 class="section-title">Section 1: Participant Information</h3></div>
+            <div class="question-box">
+              <div class="question-title">1. Is this your first time attending ISN Sports Nutrition Day? <span class="required">*</span></div>
+              <div class="radio-pill-group">
+                <label class="radio-pill"><input type="radio" name="sec1_first_time" value="Yes" required checked /> Yes</label>
+                <label class="radio-pill"><input type="radio" name="sec1_first_time" value="No" required /> No</label>
               </div>
+            </div>
 
-              <!-- Question 1: Overall Experience -->
-              <div class="question-box">
-                <div class="question-title">1) How would you rate your overall experience at the workshop? *</div>
-                <div class="star-picker" id="star-q1">
-                  <button type="button" class="star-choice selected" data-value="1" title="1 – Very Poor">★</button>
-                  <button type="button" class="star-choice selected" data-value="2" title="2 – Poor">★</button>
-                  <button type="button" class="star-choice selected" data-value="3" title="3 – Satisfactory">★</button>
-                  <button type="button" class="star-choice selected" data-value="4" title="4 – Good">★</button>
-                  <button type="button" class="star-choice selected" data-value="5" title="5 – Excellent">★</button>
-                </div>
-                <div class="scale-badge-row">
-                  <span>1 – Very Poor</span>
-                  <span id="q1-caption" style="color:var(--navy);font-weight:800;">5 – Excellent</span>
-                  <span>5 – Excellent</span>
-                </div>
-                <input type="hidden" name="q1_overall" id="q1-val" value="5" />
+            <!-- SECTION 2: Overall Event Evaluation -->
+            <div class="section-header"><h3 class="section-title">Section 2: Overall Event Evaluation</h3></div>
+            <p style="color:var(--muted);font-size:12px;margin:-8px 0 14px;">Please rate the following aspects on a scale from 1 (Poor) to 5 (Excellent):</p>
+            
+            <div class="question-box">
+              <div class="question-title">1. Overall organisation and coordination of the event. <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec2_q1">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
               </div>
+              <div class="scale-badge-row"><span>1 – Poor</span><span id="cap-sec2_q1">5 – Excellent</span><span>5 – Excellent</span></div>
+              <input type="hidden" name="sec2_q1" id="sec2_q1" value="5" required />
+            </div>
 
-              <!-- Question 2: Hydration Understanding -->
-              <div class="question-box">
-                <div class="question-title">2) To what extent did the workshop improve your understanding of hydration assessment and planning for athletes? *</div>
-                <div class="star-picker" id="star-q2">
-                  <button type="button" class="star-choice selected" data-value="1" title="1 – Not at all">★</button>
-                  <button type="button" class="star-choice selected" data-value="2" title="2 – Slightly">★</button>
-                  <button type="button" class="star-choice selected" data-value="3" title="3 – Moderately">★</button>
-                  <button type="button" class="star-choice selected" data-value="4" title="4 – Significantly">★</button>
-                  <button type="button" class="star-choice selected" data-value="5" title="5 – To a great extent">★</button>
-                </div>
-                <div class="scale-badge-row">
-                  <span>1 – Not at all</span>
-                  <span id="q2-caption" style="color:var(--navy);font-weight:800;">5 – To a great extent</span>
-                  <span>5 – To a great extent</span>
-                </div>
-                <input type="hidden" name="q2_hydration" id="q2-val" value="5" />
+            <div class="question-box">
+              <div class="question-title">2. Registration process and participant assistance. <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec2_q2">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
               </div>
+              <div class="scale-badge-row"><span>1 – Poor</span><span id="cap-sec2_q2">5 – Excellent</span><span>5 – Excellent</span></div>
+              <input type="hidden" name="sec2_q2" id="sec2_q2" value="5" required />
+            </div>
 
-              <!-- Question 3: Station Learning Activities -->
-              <div class="question-box">
-                <div class="question-title">3) How would you rate the learning activities at each station, including demonstrations, case studies and practical tasks? *</div>
-                <div class="star-picker" id="star-q3">
-                  <button type="button" class="star-choice selected" data-value="1" title="1 – Very Poor">★</button>
-                  <button type="button" class="star-choice selected" data-value="2" title="2 – Poor">★</button>
-                  <button type="button" class="star-choice selected" data-value="3" title="3 – Satisfactory">★</button>
-                  <button type="button" class="star-choice selected" data-value="4" title="4 – Good">★</button>
-                  <button type="button" class="star-choice selected" data-value="5" title="5 – Excellent">★</button>
-                </div>
-                <div class="scale-badge-row">
-                  <span>1 – Very Poor</span>
-                  <span id="q3-caption" style="color:var(--navy);font-weight:800;">5 – Excellent</span>
-                  <span>5 – Excellent</span>
-                </div>
-                <input type="hidden" name="q3_stations" id="q3-val" value="5" />
+            <div class="question-box">
+              <div class="question-title">3. Venue, facilities and comfort. <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec2_q3">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
               </div>
+              <div class="scale-badge-row"><span>1 – Poor</span><span id="cap-sec2_q3">5 – Excellent</span><span>5 – Excellent</span></div>
+              <input type="hidden" name="sec2_q3" id="sec2_q3" value="5" required />
+            </div>
 
-              <!-- Question 4: Most Valuable / Enjoyable -->
-              <div class="question-box">
-                <div class="question-title">4) What did you find most valuable or enjoyable about the workshop?</div>
-                <textarea class="form-input" name="q4_valuable" rows="3" maxlength="600" placeholder="Share your key takeaways, favorite station activities, or demonstrations..."></textarea>
+            <div class="question-box">
+              <div class="question-title">4. Refreshment and lunch arrangements. <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec2_q4">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
               </div>
+              <div class="scale-badge-row"><span>1 – Poor</span><span id="cap-sec2_q4">5 – Excellent</span><span>5 – Excellent</span></div>
+              <input type="hidden" name="sec2_q4" id="sec2_q4" value="5" required />
+            </div>
 
-              <!-- Question 5: Suggestions for Improvement -->
-              <div class="question-box">
-                <div class="question-title">5) Do you have any suggestions for improving future workshops? Please let us know 😊</div>
-                <textarea class="form-input" name="q5_suggestions" rows="3" maxlength="600" placeholder="Topics you'd love to see next, logistics, practical stations, etc..."></textarea>
+            <div class="question-box">
+              <div class="question-title">5. Overall event experience. <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec2_q5">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
               </div>
+              <div class="scale-badge-row"><span>1 – Poor</span><span id="cap-sec2_q5">5 – Excellent</span><span>5 – Excellent</span></div>
+              <input type="hidden" name="sec2_q5" id="sec2_q5" value="5" required />
+            </div>
 
-              <div id="form-error-msg" style="color:#c54842;font-size:12px;margin:12px 0;display:none;"></div>
+            <div class="question-box">
+              <div class="question-title">6. Achievement of your expectations. <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec2_q6">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
+              </div>
+              <div class="scale-badge-row"><span>1 – Poor</span><span id="cap-sec2_q6">5 – Excellent</span><span>5 – Excellent</span></div>
+              <input type="hidden" name="sec2_q6" id="sec2_q6" value="5" required />
+            </div>
 
-              <button class="button button-primary" id="submit-btn" type="submit" style="width:100%;min-height:46px;font-size:14px;margin-top:10px;">
-                Submit Feedback &amp; Receive Official E-Certificate &rarr;
-              </button>
-            </form>
-          </div>
+            <!-- SECTION 3: Symposium and Forum Evaluation -->
+            <div class="section-header"><h3 class="section-title">Section 3: Symposium and Forum Evaluation</h3></div>
+
+            <div class="question-box">
+              <strong style="color:#11133f;display:block;margin-bottom:4px;font-size:13.5px;">
+                1. Symposium 1: Hydration Strategies and Athlete Responses in Performance Settings
+              </strong>
+              <div class="question-title" style="margin-top:8px;">The session enhanced my knowledge and understanding. <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec3_s1_rating">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
+              </div>
+              <div class="scale-badge-row"><span>1 – Strongly Disagree</span><span id="cap-sec3_s1_rating">5 – Strongly Agree</span><span>5 – Strongly Agree</span></div>
+              <input type="hidden" name="sec3_s1_rating" id="sec3_s1_rating" value="5" required />
+              
+              <div style="margin-top:12px;">
+                <label class="form-label">Additional feedback or suggestions: <span class="required">*</span></label>
+                <input class="form-input" name="sec3_s1_feedback" placeholder="Your feedback for Symposium 1..." required />
+              </div>
+            </div>
+
+            <div class="question-box">
+              <strong style="color:#11133f;display:block;margin-bottom:4px;font-size:13.5px;">
+                2. Symposium 2: Hydration and Cooling Practices for Para Athlete Performance
+              </strong>
+              <div class="question-title" style="margin-top:8px;">The session enhanced my knowledge and understanding. <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec3_s2_rating">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
+              </div>
+              <div class="scale-badge-row"><span>1 – Strongly Disagree</span><span id="cap-sec3_s2_rating">5 – Strongly Agree</span><span>5 – Strongly Agree</span></div>
+              <input type="hidden" name="sec3_s2_rating" id="sec3_s2_rating" value="5" required />
+              
+              <div style="margin-top:12px;">
+                <label class="form-label">Additional feedback or suggestions: <span class="required">*</span></label>
+                <input class="form-input" name="sec3_s2_feedback" placeholder="Your feedback for Symposium 2..." required />
+              </div>
+            </div>
+
+            <div class="question-box">
+              <strong style="color:#11133f;display:block;margin-bottom:4px;font-size:13.5px;">
+                3. Forum: Hydration and Performance – Perspectives, Challenges and Practical Decisions
+              </strong>
+              <div class="question-title" style="margin-top:8px;">The session enhanced my knowledge and understanding. <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec3_forum_rating">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
+              </div>
+              <div class="scale-badge-row"><span>1 – Strongly Disagree</span><span id="cap-sec3_forum_rating">5 – Strongly Agree</span><span>5 – Strongly Agree</span></div>
+              <input type="hidden" name="sec3_forum_rating" id="sec3_forum_rating" value="5" required />
+              
+              <div style="margin-top:12px;">
+                <label class="form-label">Additional feedback or suggestions: <span class="required">*</span></label>
+                <input class="form-input" name="sec3_forum_feedback" placeholder="Your feedback for the Forum session..." required />
+              </div>
+            </div>
+
+            <!-- SECTION 4: Hydration Workshop Evaluation -->
+            <div class="section-header"><h3 class="section-title">Section 4: Hydration Workshop Evaluation</h3></div>
+
+            <div class="question-box">
+              <div class="question-title">1) How would you rate your overall experience at the workshop? <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec4_q1">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
+              </div>
+              <div class="scale-badge-row"><span>1 – Very Poor</span><span id="cap-sec4_q1">5 – Excellent</span><span>5 – Excellent</span></div>
+              <input type="hidden" name="sec4_q1" id="sec4_q1" value="5" required />
+            </div>
+
+            <div class="question-box">
+              <div class="question-title">2) To what extent did the workshop improve your understanding of hydration assessment and planning for athletes? <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec4_q2">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
+              </div>
+              <div class="scale-badge-row"><span>1 – Not at all</span><span id="cap-sec4_q2">5 – To a great extent</span><span>5 – To a great extent</span></div>
+              <input type="hidden" name="sec4_q2" id="sec4_q2" value="5" required />
+            </div>
+
+            <div class="question-box">
+              <div class="question-title">3) How would you rate the learning activities at each station, including demonstrations, case studies and practical tasks? <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec4_q3">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
+              </div>
+              <div class="scale-badge-row"><span>1 – Very Poor</span><span id="cap-sec4_q3">5 – Excellent</span><span>5 – Excellent</span></div>
+              <input type="hidden" name="sec4_q3" id="sec4_q3" value="5" required />
+            </div>
+
+            <div class="question-box">
+              <div class="question-title">4) What did you find most valuable or enjoyable about the workshop? <span class="required">*</span></div>
+              <textarea class="form-input" name="sec4_q4" rows="2" maxlength="600" placeholder="Share your key takeaways, station highlights, etc..." required></textarea>
+            </div>
+
+            <div class="question-box">
+              <div class="question-title">5) Do you have any suggestions for improving future workshops? Please let us know 😊 <span class="required">*</span></div>
+              <textarea class="form-input" name="sec4_q5" rows="2" maxlength="600" placeholder="Your suggestions for future workshop editions..." required></textarea>
+            </div>
+
+            <!-- SECTION 5: Overall Satisfaction -->
+            <div class="section-header"><h3 class="section-title">Section 5: Overall Satisfaction</h3></div>
+
+            <div class="question-box">
+              <div class="question-title">1. Overall, how satisfied are you with ISN Sports Nutrition Day 2026? <span class="required">*</span></div>
+              <div class="rating-picker" data-target="sec5_q1">
+                <button type="button" class="rate-btn" data-v="1">1</button><button type="button" class="rate-btn" data-v="2">2</button><button type="button" class="rate-btn" data-v="3">3</button><button type="button" class="rate-btn" data-v="4">4</button><button type="button" class="rate-btn selected" data-v="5">5</button>
+              </div>
+              <div class="scale-badge-row"><span>1 – Dissatisfied</span><span id="cap-sec5_q1">5 – Extremely Satisfied</span><span>5 – Extremely Satisfied</span></div>
+              <input type="hidden" name="sec5_q1" id="sec5_q1" value="5" required />
+            </div>
+
+            <div class="question-box">
+              <div class="question-title">2. What aspects of the event did you enjoy the most? <span class="required">*</span></div>
+              <input class="form-input" name="sec5_q2" placeholder="Aspects you enjoyed the most..." required />
+            </div>
+
+            <div class="question-box">
+              <div class="question-title">3. What areas do you think could be improved for future ISN Sports Nutrition Day programmes? <span class="required">*</span></div>
+              <input class="form-input" name="sec5_q3" placeholder="Areas for improvement..." required />
+            </div>
+
+            <div class="question-box">
+              <div class="question-title">4. Additional comments or suggestions (if any): <span style="font-weight:400;color:var(--muted);font-size:12px;">(Optional)</span></div>
+              <textarea class="form-input" name="sec5_q4" rows="3" maxlength="800" placeholder="Any additional comments or notes for the organizing committee (optional)..."></textarea>
+            </div>
+
+            <div id="form-error-msg" style="color:#c54842;font-size:13px;font-weight:700;margin:14px 0;display:none;background:#fee2e2;border:1px solid #f87171;border-radius:8px;padding:10px 14px;"></div>
+
+            <button class="button button-primary" id="submit-btn" type="submit" style="width:100%;min-height:48px;font-size:14px;margin-top:14px;font-weight:800;">
+              Submit Feedback &amp; Receive Official E-Certificate &rarr;
+            </button>
+          </form>
         </div>
       </div>
     </div>
-
-    <!-- Certificate Modal Container -->
-    <div id="dialog-root"></div>
 
     <script>
       let selectedAttendee = null;
@@ -198,7 +385,7 @@
       const attendeeIdInput = document.getElementById('selected-attendee-id');
       const selectedBadgeContainer = document.getElementById('selected-badge-container');
 
-      // Live Autocomplete search against 157 Master Attendees
+      // Live Autocomplete search against attendees
       nameInput.addEventListener('input', function() {
         const query = this.value.trim();
         clearTimeout(debounceTimer);
@@ -266,59 +453,64 @@
         nameInput.focus();
       };
 
-      // Star Pickers with Custom Captions
-      const qCaptions = {
-        q1: ['', '1 – Very Poor', '2 – Poor', '3 – Satisfactory', '4 – Good', '5 – Excellent'],
-        q2: ['', '1 – Not at all', '2 – Slightly', '3 – Moderately', '4 – Significantly', '5 – To a great extent'],
-        q3: ['', '1 – Very Poor', '2 – Poor', '3 – Satisfactory', '4 – Good', '5 – Excellent']
+      // Rating Pickers Handler
+      const ratingCaptions = {
+        'sec2': ['', '1 – Poor', '2 – Below Average', '3 – Average', '4 – Good', '5 – Excellent'],
+        'sec3': ['', '1 – Strongly Disagree', '2 – Disagree', '3 – Neutral', '4 – Agree', '5 – Strongly Agree'],
+        'sec4_q1': ['', '1 – Very Poor', '2 – Poor', '3 – Satisfactory', '4 – Good', '5 – Excellent'],
+        'sec4_q2': ['', '1 – Not at all', '2 – Slightly', '3 – Moderately', '4 – Significantly', '5 – To a great extent'],
+        'sec4_q3': ['', '1 – Very Poor', '2 – Poor', '3 – Satisfactory', '4 – Good', '5 – Excellent'],
+        'sec5': ['', '1 – Dissatisfied', '2 – Somewhat Dissatisfied', '3 – Neutral', '4 – Satisfied', '5 – Extremely Satisfied']
       };
 
-      function setupStarPicker(containerId, inputId, captionId, qKey) {
-        const container = document.getElementById(containerId);
-        const input = document.getElementById(inputId);
-        const caption = document.getElementById(captionId);
+      document.querySelectorAll('.rating-picker').forEach(picker => {
+        const targetId = picker.dataset.target;
+        const hiddenInput = document.getElementById(targetId);
+        const caption = document.getElementById('cap-' + targetId);
 
-        container.querySelectorAll('.star-choice').forEach(btn => {
+        picker.querySelectorAll('.rate-btn').forEach(btn => {
           btn.addEventListener('click', function() {
-            const val = Number(this.dataset.value);
-            input.value = val;
-            if (caption) caption.textContent = qCaptions[qKey][val];
-            container.querySelectorAll('.star-choice').forEach(b => {
-              b.classList.toggle('selected', Number(b.dataset.value) <= val);
+            const val = Number(this.dataset.v);
+            hiddenInput.value = val;
+            picker.querySelectorAll('.rate-btn').forEach(b => {
+              b.classList.toggle('selected', Number(b.dataset.v) === val);
             });
+            if (caption) {
+              let map = ratingCaptions.sec2;
+              if (targetId.startsWith('sec3')) map = ratingCaptions.sec3;
+              else if (targetId === 'sec4_q1') map = ratingCaptions.sec4_q1;
+              else if (targetId === 'sec4_q2') map = ratingCaptions.sec4_q2;
+              else if (targetId === 'sec4_q3') map = ratingCaptions.sec4_q3;
+              else if (targetId.startsWith('sec5')) map = ratingCaptions.sec5;
+              caption.textContent = map[val] || `${val} / 5`;
+            }
           });
         });
-      }
-      setupStarPicker('star-q1', 'q1-val', 'q1-caption', 'q1');
-      setupStarPicker('star-q2', 'q2-val', 'q2-caption', 'q2');
-      setupStarPicker('star-q3', 'q3-val', 'q3-caption', 'q3');
+      });
 
-      // Submit Handler
+      // Form Submit
       document.getElementById('public-feedback-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const errorDiv = document.getElementById('form-error-msg');
         errorDiv.style.display = 'none';
 
         if (!selectedAttendee || !attendeeIdInput.value) {
-          errorDiv.textContent = 'Please select your name from the database suggestions.';
+          errorDiv.textContent = 'Please select your participant record by typing your name or phone number first.';
           errorDiv.style.display = 'block';
           nameInput.focus();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
         }
 
         const submitBtn = document.getElementById('submit-btn');
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting feedback & generating certificate...';
+        submitBtn.textContent = 'Submitting evaluation & emailing certificate...';
 
         const formData = new FormData(this);
-        const payload = {
-          attendeeId: attendeeIdInput.value,
-          q1_overall: Number(formData.get('q1_overall') || 5),
-          q2_hydration: Number(formData.get('q2_hydration') || 5),
-          q3_stations: Number(formData.get('q3_stations') || 5),
-          q4_valuable: (formData.get('q4_valuable') || '').trim(),
-          q5_suggestions: (formData.get('q5_suggestions') || '').trim()
-        };
+        const payload = { attendeeId: attendeeIdInput.value };
+        formData.forEach((value, key) => {
+          payload[key] = value;
+        });
 
         try {
           const res = await fetch('api/feedback.php', {
@@ -332,24 +524,27 @@
             const container = document.getElementById('portal-content');
             container.innerHTML = `
               <div class="success-ecert-box">
-                <span class="toast-check" style="width:36px;height:36px;font-size:18px;margin-bottom:12px;">✓</span>
-                <h2 style="color:#11133f;font-size:20px;margin:0 0 8px;">Workshop Feedback Submitted!</h2>
-                <p style="color:#13ae48;font-size:14px;font-weight:700;margin:0 0 10px;">
-                  ✉️ Your official E-Certificate has been emailed to:
+                <span class="toast-check" style="width:40px;height:40px;font-size:20px;margin-bottom:14px;">✓</span>
+                <h2 style="color:#11133f;font-size:22px;margin:0 0 10px;font-family:'Manrope',sans-serif;font-weight:800;">
+                  Thank You for Your Feedback!
+                </h2>
+                <p style="color:#13ae48;font-size:14px;font-weight:700;margin:0 0 12px;">
+                  ✉️ Your official E-Certificate has been emailed directly to:
                 </p>
-                <div style="background:#ffffff;border:1.5px solid #1fd75a;border-radius:8px;padding:10px 14px;display:inline-block;font-weight:700;color:#11133f;margin-bottom:16px;">
+                <div style="background:#ffffff;border:1.5px solid #1fd75a;border-radius:8px;padding:12px 18px;display:inline-block;font-weight:800;color:#11133f;font-size:14px;margin-bottom:18px;">
                   ${selectedAttendee.email}
                 </div>
-                <p style="color:#575b77;font-size:13px;margin:0 0 20px;line-height:1.6;">
-                  Thank you for your valuable feedback. Your official Certificate of Participation signed by the Chief Executive Officer of Institut Sukan Negara (ISN) has been sent directly to your email inbox.
+                <p style="color:#575b77;font-size:13px;line-height:1.6;margin:0 0 24px;max-width:520px;margin-left:auto;margin-right:auto;">
+                  Your evaluation has been successfully submitted and stored. The official Certificate of Participation signed by the Chief Executive Officer of Institut Sukan Negara (ISN) is on its way to your inbox.
                 </p>
-                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                <div style="display:flex;gap:12px;justify-content:center;">
                   <button type="button" class="button button-outline" onclick="location.reload()" style="min-height:42px;">
                     Submit Another Feedback
                   </button>
                 </div>
               </div>
             `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           } else {
             errorDiv.textContent = json.error || 'Failed to submit feedback. Please try again.';
             errorDiv.style.display = 'block';
@@ -357,73 +552,12 @@
             submitBtn.textContent = 'Submit Feedback & Receive Official E-Certificate →';
           }
         } catch(err) {
-          errorDiv.textContent = 'Network error connecting to MySQL server.';
+          errorDiv.textContent = 'Network error connecting to server. Please try again.';
           errorDiv.style.display = 'block';
           submitBtn.disabled = false;
           submitBtn.textContent = 'Submit Feedback & Receive Official E-Certificate →';
         }
       });
-
-      window.showCertModal = function() {
-        const root = document.getElementById('dialog-root');
-        root.innerHTML = `
-          <div class="modal-backdrop" onclick="closeCertModal(event)">
-            <div class="modal wide" onclick="event.stopPropagation()">
-              <div class="modal-header">
-                <div><h2 class="modal-title">Official E-Certificate of Participation</h2><p class="modal-description">Issued by Institut Sukan Negara (ISN)</p></div>
-                <button class="modal-close" onclick="document.getElementById('dialog-root').innerHTML=''">&times;</button>
-              </div>
-              <div class="modal-body">
-                <div class="cert-canvas-frame" id="printable-cert">
-                  <div class="cert-inner-border">
-                    <div class="cert-header">
-                      <img src="assets/brand/perform-snd-lockup.png" alt="PERFORM SND" />
-                      <img src="assets/brand/isn-organiser-lockup.png" alt="ISN Organiser" />
-                    </div>
-                    <div class="cert-pre-title">INSTITUT SUKAN NEGARA (ISN) MALAYSIA</div>
-                    <h2 class="cert-title">Certificate of Participation</h2>
-                    <div class="cert-subtitle">This certificate is proudly awarded to</div>
-                    <div class="cert-name">${selectedAttendee.name}</div>
-                    <div style="margin-bottom:12px;">
-                      <span class="team-pill team-pill-pink">${selectedAttendee.team || 'Participant'}</span>
-                      <span style="font-size:12px;color:var(--muted);margin-left:8px;">
-                        ${selectedAttendee.institution ? selectedAttendee.institution + ' &bull; ' : ''}Reg ID: ${selectedAttendee.id}
-                      </span>
-                    </div>
-                    <p class="cert-body-text">
-                      For active participation and completion of the symposium workshop<br />
-                      <strong>"Hydration and Performance Nutrition: Strategies and Practices"</strong><br />
-                      held during <strong>ISN Sports Nutrition Day 2026</strong> on 11 November 2026.
-                    </p>
-                    <div class="cert-signatures">
-                      <div class="cert-sig-block">
-                        <div style="font-family:'Brush Script MT', cursive, sans-serif;font-size:22px;color:#11133f;height:32px;">Ahmad Faizal</div>
-                        <div class="cert-sig-title">Head of Sports Nutrition</div>
-                        <div class="cert-sig-org">Institut Sukan Negara</div>
-                      </div>
-                      <div class="cert-sig-block">
-                        <div style="font-family:'Brush Script MT', cursive, sans-serif;font-size:22px;color:#11133f;height:32px;">Dr. Lim Jin</div>
-                        <div class="cert-sig-title">Director of Performance</div>
-                        <div class="cert-sig-org">PERFORM SND 2026</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button class="button button-primary" onclick="window.print()">Print / Save PDF</button>
-                <button class="button button-outline" onclick="document.getElementById('dialog-root').innerHTML=''">Close</button>
-              </div>
-            </div>
-          </div>
-        `;
-      };
-
-      window.closeCertModal = function(e) {
-        if (e.target.classList.contains('modal-backdrop')) {
-          document.getElementById('dialog-root').innerHTML = '';
-        }
-      };
 
       document.addEventListener('click', function(e) {
         if (!e.target.closest('.autocomplete-wrap')) {

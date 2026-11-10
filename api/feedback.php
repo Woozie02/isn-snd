@@ -32,6 +32,7 @@ if ($method === 'GET') {
         $row['teamColor'] = $row['team_color'];
         $row['teamBg'] = $row['team_bg'];
         $row['institution'] = $row['institution'];
+        $row['responses'] = !empty($row['responses_json']) ? json_decode($row['responses_json'], true) : null;
     }
 
     echo json_encode(array('success' => true, 'data' => $rows));
@@ -48,18 +49,32 @@ if ($method === 'POST') {
 
     $attendee_id = isset($input['attendeeId']) ? trim($input['attendeeId']) : '';
     
-    // The 5 Workshop Questions
-    $q1_overall = isset($input['q1_overall']) ? (int)$input['q1_overall'] : (isset($input['rating']) ? (int)$input['rating'] : 5);
-    $q2_hydration = isset($input['q2_hydration']) ? (int)$input['q2_hydration'] : (isset($input['sessionRating']) ? (int)$input['sessionRating'] : 5);
-    $q3_stations = isset($input['q3_stations']) ? (int)$input['q3_stations'] : 5;
-    $q4_valuable = isset($input['q4_valuable']) ? trim($input['q4_valuable']) : (isset($input['comment']) ? trim($input['comment']) : '');
-    $q5_suggestions = isset($input['q5_suggestions']) ? trim($input['q5_suggestions']) : '';
+    // Store all raw responses for complete section 1-5 survey answers
+    $responses_json = json_encode($input, JSON_UNESCAPED_UNICODE);
 
-    // Legacy fields for backward compatibility
-    $rating = $q1_overall;
-    $session_rating = $q2_hydration;
-    $recommend = isset($input['recommend']) ? trim($input['recommend']) : 'Yes';
-    $comment = !empty($q4_valuable) ? $q4_valuable : (!empty($q5_suggestions) ? $q5_suggestions : 'Excellent workshop.');
+    // Section 4 / Overall rating mappings for standard dashboard stats
+    $sec4_q1 = isset($input['sec4_q1']) ? (int)$input['sec4_q1'] : (isset($input['q1_overall']) ? (int)$input['q1_overall'] : 5);
+    $sec4_q2 = isset($input['sec4_q2']) ? (int)$input['sec4_q2'] : (isset($input['q2_hydration']) ? (int)$input['q2_hydration'] : 5);
+    $sec4_q3 = isset($input['sec4_q3']) ? (int)$input['sec4_q3'] : (isset($input['q3_stations']) ? (int)$input['q3_stations'] : 5);
+    $sec4_q4 = isset($input['sec4_q4']) ? trim($input['sec4_q4']) : (isset($input['q4_valuable']) ? trim($input['q4_valuable']) : '');
+    $sec4_q5 = isset($input['sec4_q5']) ? trim($input['sec4_q5']) : (isset($input['q5_suggestions']) ? trim($input['q5_suggestions']) : '');
+
+    // Overall satisfaction
+    $sec5_q1 = isset($input['sec5_q1']) ? (int)$input['sec5_q1'] : $sec4_q1;
+    $sec5_q2 = isset($input['sec5_q2']) ? trim($input['sec5_q2']) : '';
+    $sec5_q3 = isset($input['sec5_q3']) ? trim($input['sec5_q3']) : '';
+    $sec5_q4 = isset($input['sec5_q4']) ? trim($input['sec5_q4']) : '';
+
+    $q1_overall = $sec4_q1;
+    $q2_hydration = $sec4_q2;
+    $q3_stations = $sec4_q3;
+    $q4_valuable = $sec4_q4;
+    $q5_suggestions = $sec4_q5;
+
+    $rating = $sec5_q1;
+    $session_rating = $sec4_q2;
+    $recommend = 'Yes';
+    $comment = !empty($sec4_q4) ? $sec4_q4 : (!empty($sec5_q2) ? $sec5_q2 : 'Completed evaluation.');
 
     if (!$attendee_id) {
         http_response_code(400);
@@ -83,8 +98,8 @@ if ($method === 'POST') {
 
     try {
         $stmt = $pdo->prepare("INSERT INTO feedback 
-            (id, attendee_id, q1_overall, q2_hydration, q3_stations, q4_valuable, q5_suggestions, rating, session_rating, recommend, comment, submitted_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            (id, attendee_id, q1_overall, q2_hydration, q3_stations, q4_valuable, q5_suggestions, rating, session_rating, recommend, comment, responses_json, submitted_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute(array(
             $id, 
             $attendee_id, 
@@ -97,6 +112,7 @@ if ($method === 'POST') {
             $session_rating, 
             $recommend, 
             $comment, 
+            $responses_json, 
             $submitted_at
         ));
 
