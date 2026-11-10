@@ -120,7 +120,9 @@ if ($method === 'POST') {
         $certUrl = 'assets/certificates/' . $certFileName;
 
         $pyScript = __DIR__ . '/../generate_cert.py';
-        $pyCmd = sprintf('python %s %s %s %s %s %s 2>&1',
+        $pyBinary = (DIRECTORY_SEPARATOR === '\\') ? 'python' : 'python3';
+        $pyCmd = sprintf('%s %s %s %s %s %s %s 2>&1',
+            $pyBinary,
             escapeshellarg($pyScript),
             escapeshellarg($attendee['name']),
             escapeshellarg($attendee['id']),

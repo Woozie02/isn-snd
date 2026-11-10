@@ -329,8 +329,6 @@
           const json = await res.json();
 
           if (json.success) {
-            const certUrl = json.data && json.data.certUrl ? json.data.certUrl : '';
-            window.latestCertUrl = certUrl;
             const container = document.getElementById('portal-content');
             container.innerHTML = `
               <div class="success-ecert-box">
@@ -342,15 +340,13 @@
                 <div style="background:#ffffff;border:1.5px solid #1fd75a;border-radius:8px;padding:10px 14px;display:inline-block;font-weight:700;color:#11133f;margin-bottom:16px;">
                   ${selectedAttendee.email}
                 </div>
-                <p style="color:#575b77;font-size:12px;margin:0 0 20px;">
-                  Your customized certificate based on the official event template has been generated. You can download the PDF directly below.
+                <p style="color:#575b77;font-size:13px;margin:0 0 20px;line-height:1.6;">
+                  Thank you for your valuable feedback. Your official Certificate of Participation signed by the Chief Executive Officer of Institut Sukan Negara (ISN) has been sent directly to your email inbox.
                 </p>
                 <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-                  ${certUrl ? `<a href="${certUrl}" download="Certificate_${selectedAttendee.id}.pdf" class="button button-primary" style="min-height:42px;display:inline-flex;align-items:center;gap:6px;">📄 Download Certificate (PDF)</a>` : ''}
-                  <button class="button button-outline" onclick="showCertModal()" type="button" style="min-height:42px;">
-                    Preview Certificate
+                  <button type="button" class="button button-outline" onclick="location.reload()" style="min-height:42px;">
+                    Submit Another Feedback
                   </button>
-                  <a href="checkin.html" class="button button-outline" style="min-height:42px;">Self Check-In Portal</a>
                 </div>
               </div>
             `;
