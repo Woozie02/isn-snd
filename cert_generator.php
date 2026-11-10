@@ -41,10 +41,13 @@ function generateParticipantCertificatePDF($name, $outputPath = '') {
 
     $cleanName = strtoupper(trim($name));
     $nameLen = strlen($cleanName);
-    $fontSize = ($nameLen < 28) ? 22 : (($nameLen < 40) ? 18 : 14);
-    $charW = $fontSize * 0.58;
+    $fontSize = ($nameLen < 28) ? 20 : (($nameLen < 40) ? 16 : 13);
+    $charW = $fontSize * 0.60;
     $textW = $nameLen * $charW;
-    $startX = max(25.0, ($pageW - $textW) / 2.0);
+
+    // Visual content center of certificate template is X = 251.0 pt
+    $contentCenterX = 251.0;
+    $startX = max(20.0, $contentCenterX - ($textW / 2.0));
 
     // PDF stream
     $stream = "q\n" .
