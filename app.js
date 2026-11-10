@@ -47,14 +47,16 @@ let recentCheckins = [];
 // API helper functions
 async function fetchAPI(endpoint, options = {}) {
   try {
-    const res = await fetch(`/snd26/api/${endpoint}`, {
+    // Dynamic path detection: supports /snd26/ subfolder on localhost as well as root / on production domain
+    const basePath = window.location.pathname.startsWith('/snd26') ? '/snd26/api/' : 'api/';
+    const res = await fetch(`${basePath}${endpoint}`, {
       headers: { 'Content-Type': 'application/json' },
       ...options
     });
     if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     return await res.json();
   } catch (err) {
-    console.warn(`API call to /api/${endpoint} failed:`, err);
+    console.warn(`API call to ${endpoint} failed:`, err);
     return null;
   }
 }
@@ -1100,8 +1102,9 @@ window.closeModalAndResumeDesk = function() {
 function openQRCodeModal(initialTab = 'checkin') {
   const host = window.location.host;
   const protocol = window.location.protocol;
-  const checkinUrl = `${protocol}//${host}/snd26/checkin.html`;
-  const feedbackUrl = `${protocol}//${host}/snd26/feedback.html`;
+  const rootPath = window.location.pathname.startsWith('/snd26') ? '/snd26/' : '/';
+  const checkinUrl = `${protocol}//${host}${rootPath}checkin.html`;
+  const feedbackUrl = `${protocol}//${host}${rootPath}feedback.html`;
 
   openModal(`
     <div class="modal-header">
@@ -1141,8 +1144,9 @@ function openQRCodeModal(initialTab = 'checkin') {
 window.switchQRTab = function(tab) {
   const host = window.location.host;
   const protocol = window.location.protocol;
-  const checkinUrl = `${protocol}//${host}/snd26/checkin.html`;
-  const feedbackUrl = `${protocol}//${host}/snd26/feedback.html`;
+  const rootPath = window.location.pathname.startsWith('/snd26') ? '/snd26/' : '/';
+  const checkinUrl = `${protocol}//${host}${rootPath}checkin.html`;
+  const feedbackUrl = `${protocol}//${host}${rootPath}feedback.html`;
   const targetUrl = tab === 'checkin' ? checkinUrl : feedbackUrl;
 
   const btnCheckin = document.getElementById('tab-qr-checkin');
