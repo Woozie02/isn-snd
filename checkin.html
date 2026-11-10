@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#11133f" />
+    <title>Self Check-In | ISN Sports Nutrition Day 2026</title>
+    <link rel="icon" type="image/svg+xml" href="isn-symbol.svg" />
+    <link rel="stylesheet" href="styles.css?v=4" />
+    <style>
+      .checkin-portal-shell {
+        min-height: 100vh;
+        background: #f6f7fa;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 30px 16px 60px;
+      }
+      .checkin-card {
+        background: #ffffff;
+        border: 1.5px solid #d5d8e6;
+        border-radius: 18px;
+        box-shadow: 0 16px 40px rgba(17, 19, 63, .08);
+        max-width: 580px;
+        width: 100%;
+        overflow: visible;
+      }
+      .checkin-hero {
+        background: linear-gradient(115deg, #11133f 0%, #1c205e 100%);
+        color: #ffffff;
+        padding: 28px 24px;
+        text-align: center;
+        border-top-left-radius: 17px;
+        border-top-right-radius: 17px;
+      }
+      .checkin-body {
+        padding: 28px 24px 32px;
+      }
+      .counter-claim-banner {
+        background: #fffbeb;
+        border: 2px solid #f59e0b;
+        border-radius: 12px;
+        padding: 18px 20px;
+        margin-top: 20px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .claim-pill-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .claim-item {
+        background: #ffffff;
+        border: 1px solid #f59e0b;
+        color: #92400e;
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .attendee-info-card {
+        background: #ffffff;
+        border: 2px solid #1fd75a;
+        border-radius: 14px;
+        padding: 24px 20px;
+        margin-top: 18px;
+        box-shadow: 0 10px 28px rgba(31, 215, 90, .12);
+        position: relative;
+      }
+      .attendee-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 16px;
+        text-align: left;
+      }
+      @media (max-width: 480px) {
+        .attendee-info-grid { grid-template-columns: 1fr; }
+      }
+      .info-field-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px 12px;
+      }
+      .info-field-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 700;
+        letter-spacing: .04em;
+        margin-bottom: 2px;
+      }
+      .info-field-val {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--navy);
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="checkin-portal-shell">
+      <div class="checkin-card">
+        <div class="checkin-hero">
+          <div style="display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:12px;">
+            <img src="assets/brand/perform-snd-lockup.png" alt="PERFORM SND" style="height:32px;filter:brightness(0) invert(1);" />
+            <img src="assets/brand/isn-organiser-lockup.png" alt="ISN" style="height:28px;filter:brightness(0) invert(1);" />
+          </div>
+          <span class="hero-badge" style="background:rgba(255,255,255,.15);color:#fff;margin-bottom:8px;">11 NOV 2026 &bull; ATTENDEE ARRIVAL</span>
+          <h1 style="color:#ffffff;font-size:22px;margin:8px 0 4px;font-family:'Manrope',sans-serif;font-weight:800;">Self Check-In Portal</h1>
+          <p style="color:#c5c8e4;font-size:12px;margin:0;">ISN Sports Nutrition Day 2026</p>
+        </div>
+
+        <div class="checkin-body" id="checkin-view-root">
+          <!-- Form View or Confirmed State will be rendered here -->
+        </div>
+      </div>
+      <div style="margin-top:20px;color:#94a3b8;font-size:11px;">
+        Institut Sukan Negara (ISN) &bull; Event Attendance Desk
+      </div>
+    </div>
+
+    <script>
+      const STORAGE_KEY = 'snd26_participant_self_checkin';
+      let selectedCandidate = null;
+      let debounceTimer = null;
+
+      function renderCheckInForm() {
+        const root = document.getElementById('checkin-view-root');
+        root.innerHTML = `
+          <h2 style="color:var(--navy);font-size:18px;margin-bottom:6px;">Find Your Registration</h2>
+          <p style="color:var(--muted);font-size:12px;margin-bottom:18px;">
+            Enter your mobile phone number (or name) to verify your registration and complete arrival check-in.
+          </p>
+
+          <form id="self-checkin-form">
+            <div class="autocomplete-wrap" style="position:relative;margin-bottom:16px;">
+              <label class="form-label" style="display:block;margin-bottom:6px;">Mobile Phone Number or Full Name *</label>
+              <input type="text" id="phone-input" class="form-input" placeholder="e.g. 013-8878990 or 0138878990 or Name" autocomplete="off" required autofocus />
+              <div style="font-size:11px;color:#64748b;margin-top:4px;">
+                You can type with dashes (<code>013-8878990</code>), without dashes (<code>0138878990</code>), or by name.
+              </div>
+              <input type="hidden" id="selected-att-id" required />
+              <div id="autocomplete-list" class="autocomplete-list" style="display:none;max-height:280px;z-index:9999;box-shadow:0 18px 36px rgba(17,19,63,.22);"></div>
+              <div id="selected-preview-box" style="display:none;margin-top:10px;"></div>
+            </div>
+
+            <div id="checkin-error-msg" style="color:#c54842;font-size:12px;margin-bottom:12px;display:none;"></div>
+
+            <button class="button button-primary" id="checkin-btn" type="submit" style="width:100%;min-height:46px;font-size:14px;margin-top:10px;" disabled>
+              Confirm My Check-In &rarr;
+            </button>
+          </form>
+        `;
+
+        const phoneInput = document.getElementById('phone-input');
+        const hiddenId = document.getElementById('selected-att-id');
+        const dropdown = document.getElementById('autocomplete-list');
+        const preview = document.getElementById('selected-preview-box');
+        const btn = document.getElementById('checkin-btn');
+
+        phoneInput.addEventListener('input', function() {
+          const raw = this.value.trim();
+          clearTimeout(debounceTimer);
+          if (raw.length < 2) {
+            dropdown.style.display = 'none';
+            return;
+          }
+
+          debounceTimer = setTimeout(async () => {
+            try {
+              const res = await fetch(`api/attendees.php?search=${encodeURIComponent(raw)}`);
+              const json = await res.json();
+              if (json.success && json.data.length > 0) {
+                dropdown.innerHTML = `
+                  <div style="padding:6px 12px;background:#f3f4f8;border-bottom:1px solid #e5e7eb;font-size:11px;font-weight:700;color:#4b5278;">
+                    CHOOSE YOUR NAME (${json.data.length} match${json.data.length > 1 ? 'es' : ''}):
+                  </div>
+                ` + json.data.map(att => `
+                  <div class="autocomplete-item" onclick="chooseCandidate('${att.id}', '${att.name.replace(/'/g, "\\'")}', '${att.email}', '${att.phone || ''}', '${att.category}', '${att.team || ''}', '${att.team_name || att.teamName || ''}')" style="padding:10px 14px;border-bottom:1px solid #f0f1f5;cursor:pointer;">
+                    <div>
+                      <strong style="color:var(--navy);font-size:13px;letter-spacing:.02em;">${att.name.toUpperCase()}</strong>
+                      <small style="color:#6b7280;font-size:11px;">Phone: <strong>${att.phone || 'N/A'}</strong> &bull; ${att.email}</small>
+                    </div>
+                    <span class="team-pill" style="background:#f0f1f7;font-size:10px;">${att.team_name || 'Assigned'}</span>
+                  </div>
+                `).join('');
+                dropdown.style.display = 'block';
+              } else {
+                dropdown.innerHTML = '<div style="padding:12px;font-size:12px;color:#7d8199;text-align:center;">No registration found with this phone number or name.</div>';
+                dropdown.style.display = 'block';
+              }
+            } catch(e) {
+              console.error(e);
+            }
+          }, 150);
+        });
+
+        document.getElementById('self-checkin-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const errorMsg = document.getElementById('checkin-error-msg');
+          errorMsg.style.display = 'none';
+
+          if (!selectedCandidate || !hiddenId.value) {
+            errorMsg.textContent = 'Please select your name from the search suggestions.';
+            errorMsg.style.display = 'block';
+            return;
+          }
+
+          btn.disabled = true;
+          btn.textContent = 'Recording check-in...';
+
+          try {
+            const res = await fetch('api/checkin.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: hiddenId.value, action: 'checkin' })
+            });
+            const json = await res.json();
+
+            if (json.success) {
+              const checkedAttendee = json.data;
+              // Persist in localStorage so refreshing preserves display
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(checkedAttendee));
+              renderConfirmedState(checkedAttendee);
+            } else {
+              errorMsg.textContent = json.error || 'Check-in failed. Please contact the registration desk.';
+              errorMsg.style.display = 'block';
+              btn.disabled = false;
+              btn.textContent = 'Confirm My Check-In →';
+            }
+          } catch(err) {
+            errorMsg.textContent = 'Server error. Please try again.';
+            errorMsg.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Confirm My Check-In →';
+          }
+        });
+      }
+
+      window.chooseCandidate = function(id, name, email, phone, category, team, teamName) {
+        selectedCandidate = { id, name, email, phone, category, team, teamName };
+        document.getElementById('selected-att-id').value = id;
+        document.getElementById('phone-input').value = phone || name;
+        document.getElementById('autocomplete-list').style.display = 'none';
+
+        const preview = document.getElementById('selected-preview-box');
+        preview.innerHTML = `
+          <div class="attendee-badge-selected" style="background:#f0faf2;border:1.5px solid #1fd75a;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <strong style="color:var(--navy);font-size:14px;display:block;">${name.toUpperCase()}</strong>
+              <small style="color:#4b5278;">${email} &bull; Phone: ${phone || 'N/A'}</small>
+            </div>
+            <span class="team-pill" style="background:#eaf8ed;color:#13ae48;font-size:11px;font-weight:700;">Ready to Check In</span>
+          </div>
+        `;
+        preview.style.display = 'block';
+
+        const btn = document.getElementById('checkin-btn');
+        btn.disabled = false;
+      };
+
+      function renderConfirmedState(att) {
+        const root = document.getElementById('checkin-view-root');
+        
+        let teamColor = '#8b5cf6';
+        let teamBg = '#f5f3ff';
+        if (att.team === 'TEAM-1') { teamColor = '#ec4899'; teamBg = '#fdf2f8'; }
+        else if (att.team === 'TEAM-2') { teamColor = '#8b5cf6'; teamBg = '#f5f3ff'; }
+        else if (att.team === 'TEAM-3') { teamColor = '#f97316'; teamBg = '#fff7ed'; }
+        else if (att.team === 'TEAM-4') { teamColor = '#64748b'; teamBg = '#f8fafc'; }
+
+        root.innerHTML = `
+          <div style="text-align:center;">
+            <div style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:#1fd75a;color:#11133f;font-size:24px;font-weight:900;margin-bottom:12px;">
+              ✓
+            </div>
+            <h2 style="color:var(--navy);font-size:22px;margin:0 0 6px;">Check-In Confirmed!</h2>
+            <p style="color:#13ae48;font-weight:700;font-size:13px;margin:0;">
+              Welcome to ISN Sports Nutrition Day 2026
+            </p>
+          </div>
+
+          <!-- Verified Attendee Info Card -->
+          <div class="attendee-info-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:10px;">
+              <div>
+                <span style="font-size:11px;color:#64748b;font-weight:700;">REGISTRATION ID</span>
+                <div style="font-size:16px;font-weight:800;color:var(--navy);">${att.id}</div>
+              </div>
+              <span class="team-pill" style="background:${teamBg};color:${teamColor};border:1.5px solid ${teamColor};font-size:12px;padding:5px 12px;">
+                ${att.teamName || att.team || 'Assigned'}
+              </span>
+            </div>
+
+            <div class="attendee-info-grid">
+              <div class="info-field-box">
+                <div class="info-field-label">Full Name</div>
+                <div class="info-field-val">${att.name.toUpperCase()}</div>
+              </div>
+              <div class="info-field-box">
+                <div class="info-field-label">Assigned Team</div>
+                <div class="info-field-val" style="color:${teamColor};">${att.teamName || att.team}</div>
+              </div>
+              <div class="info-field-box">
+                <div class="info-field-label">Category / Role</div>
+                <div class="info-field-val">${att.category}</div>
+              </div>
+              <div class="info-field-box">
+                <div class="info-field-label">Mobile Phone</div>
+                <div class="info-field-val">${att.phone || 'N/A'}</div>
+              </div>
+              <div class="info-field-box" style="grid-column: 1/-1;">
+                <div class="info-field-label">Email Address</div>
+                <div class="info-field-val">${att.email}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Counter Claim Instruction Notification -->
+          <div class="counter-claim-banner">
+            <span style="font-size:24px;line-height:1;">👉</span>
+            <div>
+              <strong style="color:#92400e;font-size:14px;display:block;margin-bottom:4px;">
+                IMPORTANT: Claim Your Event Kit at Counter
+              </strong>
+              <p style="color:#78350f;font-size:12px;line-height:1.5;margin:0;">
+                Please proceed to the <strong>Registration Counter</strong> now and show this screen to collect your:
+              </p>
+              <div class="claim-pill-list">
+                <span class="claim-item">🏷️ Name Tag</span>
+                <span class="claim-item">🎗️ Team Wristband (${att.teamName || 'Team'})</span>
+                <span class="claim-item">🧾 Official Receipt</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:24px;text-align:center;display:flex;gap:12px;justify-content:center;">
+            <a href="feedback.html" class="button button-primary" style="text-decoration:none;min-height:42px;">
+              Go to Session Feedback Form &rarr;
+            </a>
+            <button type="button" class="button button-outline" onclick="resetCheckInSession()">
+              Check In Another Attendee
+            </button>
+          </div>
+        `;
+      }
+
+      function resetCheckInSession() {
+        localStorage.removeItem(STORAGE_KEY);
+        selectedCandidate = null;
+        renderCheckInForm();
+      }
+
+      // Check on page load if user already checked in (persists on refresh)
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.id) {
+            renderConfirmedState(parsed);
+          } else {
+            renderCheckInForm();
+          }
+        } catch(e) {
+          renderCheckInForm();
+        }
+      } else {
+        renderCheckInForm();
+      }
+
+      // Close autocomplete on click outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.autocomplete-wrap')) {
+          const dl = document.getElementById('autocomplete-list');
+          if (dl) dl.style.display = 'none';
+        }
+      });
+    </script>
+  </body>
+</html>
+

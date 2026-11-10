@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#11133f" />
+    <title>Workshop Feedback & E-Certificate | ISN Sports Nutrition Day 2026</title>
+    <link rel="icon" type="image/svg+xml" href="isn-symbol.svg" />
+    <link rel="stylesheet" href="styles.css?v=5" />
+    <style>
+      .feedback-portal-shell {
+        min-height: 100vh;
+        background: #f6f7fa;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 30px 16px 60px;
+      }
+      .feedback-card {
+        background: #ffffff;
+        border: 1.5px solid #d5d8e6;
+        border-radius: 18px;
+        box-shadow: 0 16px 40px rgba(17, 19, 63, .08);
+        max-width: 660px;
+        width: 100%;
+        overflow: visible;
+      }
+      .feedback-card-hero {
+        background: linear-gradient(115deg, #11133f 0%, #1c205e 100%);
+        color: #ffffff;
+        padding: 28px 24px;
+        text-align: center;
+        border-top-left-radius: 17px;
+        border-top-right-radius: 17px;
+      }
+      .feedback-card-body {
+        padding: 28px 24px 32px;
+      }
+      .question-box {
+        background: #fafbfe;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-bottom: 18px;
+      }
+      .question-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0 0 10px;
+        line-height: 1.45;
+      }
+      .scale-badge-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        margin-top: 6px;
+      }
+      .attendee-badge-selected {
+        background: #f0faf2;
+        border: 1.5px solid #1fd75a;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .success-ecert-box {
+        background: #e6f9eb;
+        border: 2px solid #1fd75a;
+        border-radius: 14px;
+        padding: 24px 20px;
+        text-align: center;
+        margin-bottom: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="feedback-portal-shell">
+      <div class="feedback-card">
+        <div class="feedback-card-hero">
+          <div style="display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:12px;">
+            <img src="assets/brand/perform-snd-lockup.png" alt="PERFORM SND" style="height:32px;filter:brightness(0) invert(1);" />
+            <img src="assets/brand/isn-organiser-lockup.png" alt="ISN" style="height:28px;filter:brightness(0) invert(1);" />
+          </div>
+          <span class="hero-badge" style="background:rgba(255,255,255,.15);color:#fff;margin-bottom:8px;">11 NOV 2026 &bull; WORKSHOP EVALUATION</span>
+          <h1 style="color:#ffffff;font-size:22px;margin:8px 0 6px;font-family:'Manrope',sans-serif;font-weight:800;">Workshop Feedback Form</h1>
+          <p style="color:#c5c8e4;font-size:12px;margin:0;">"Hydration and Performance Nutrition: Strategies and Practices"</p>
+        </div>
+
+        <div class="feedback-card-body" id="portal-content">
+          <div id="feedback-form-container">
+            <h2 style="color:var(--navy);font-size:18px;margin-bottom:6px;">Participant Evaluation</h2>
+            <p style="color:var(--muted);font-size:12px;margin-bottom:20px;">
+              Please identify yourself by typing your name or phone number below. Your feedback helps ISN enhance future sports nutrition symposiums and immediately unlocks your official E-Certificate.
+            </p>
+
+            <form id="public-feedback-form">
+              <!-- Autocomplete Attendee Input -->
+              <div class="autocomplete-wrap" style="position:relative;margin-bottom:22px;">
+                <label class="form-label" style="display:block;margin-bottom:6px;">Type Your Name or Phone Number *</label>
+                <input type="text" id="attendee-name-input" class="form-input" placeholder="Start typing name (e.g. Nurliyana, Hazizi, Arif...) or phone" autocomplete="off" required autofocus />
+                <input type="hidden" id="selected-attendee-id" name="attendeeId" required />
+                <div id="autocomplete-results" class="autocomplete-list" style="display:none;max-height:240px;"></div>
+                <div id="selected-badge-container" style="display:none;"></div>
+              </div>
+
+              <!-- Question 1: Overall Experience -->
+              <div class="question-box">
+                <div class="question-title">1) How would you rate your overall experience at the workshop? *</div>
+                <div class="star-picker" id="star-q1">
+                  <button type="button" class="star-choice selected" data-value="1" title="1 – Very Poor">★</button>
+                  <button type="button" class="star-choice selected" data-value="2" title="2 – Poor">★</button>
+                  <button type="button" class="star-choice selected" data-value="3" title="3 – Satisfactory">★</button>
+                  <button type="button" class="star-choice selected" data-value="4" title="4 – Good">★</button>
+                  <button type="button" class="star-choice selected" data-value="5" title="5 – Excellent">★</button>
+                </div>
+                <div class="scale-badge-row">
+                  <span>1 – Very Poor</span>
+                  <span id="q1-caption" style="color:var(--navy);font-weight:800;">5 – Excellent</span>
+                  <span>5 – Excellent</span>
+                </div>
+                <input type="hidden" name="q1_overall" id="q1-val" value="5" />
+              </div>
+
+              <!-- Question 2: Hydration Understanding -->
+              <div class="question-box">
+                <div class="question-title">2) To what extent did the workshop improve your understanding of hydration assessment and planning for athletes? *</div>
+                <div class="star-picker" id="star-q2">
+                  <button type="button" class="star-choice selected" data-value="1" title="1 – Not at all">★</button>
+                  <button type="button" class="star-choice selected" data-value="2" title="2 – Slightly">★</button>
+                  <button type="button" class="star-choice selected" data-value="3" title="3 – Moderately">★</button>
+                  <button type="button" class="star-choice selected" data-value="4" title="4 – Significantly">★</button>
+                  <button type="button" class="star-choice selected" data-value="5" title="5 – To a great extent">★</button>
+                </div>
+                <div class="scale-badge-row">
+                  <span>1 – Not at all</span>
+                  <span id="q2-caption" style="color:var(--navy);font-weight:800;">5 – To a great extent</span>
+                  <span>5 – To a great extent</span>
+                </div>
+                <input type="hidden" name="q2_hydration" id="q2-val" value="5" />
+              </div>
+
+              <!-- Question 3: Station Learning Activities -->
+              <div class="question-box">
+                <div class="question-title">3) How would you rate the learning activities at each station, including demonstrations, case studies and practical tasks? *</div>
+                <div class="star-picker" id="star-q3">
+                  <button type="button" class="star-choice selected" data-value="1" title="1 – Very Poor">★</button>
+                  <button type="button" class="star-choice selected" data-value="2" title="2 – Poor">★</button>
+                  <button type="button" class="star-choice selected" data-value="3" title="3 – Satisfactory">★</button>
+                  <button type="button" class="star-choice selected" data-value="4" title="4 – Good">★</button>
+                  <button type="button" class="star-choice selected" data-value="5" title="5 – Excellent">★</button>
+                </div>
+                <div class="scale-badge-row">
+                  <span>1 – Very Poor</span>
+                  <span id="q3-caption" style="color:var(--navy);font-weight:800;">5 – Excellent</span>
+                  <span>5 – Excellent</span>
+                </div>
+                <input type="hidden" name="q3_stations" id="q3-val" value="5" />
+              </div>
+
+              <!-- Question 4: Most Valuable / Enjoyable -->
+              <div class="question-box">
+                <div class="question-title">4) What did you find most valuable or enjoyable about the workshop?</div>
+                <textarea class="form-input" name="q4_valuable" rows="3" maxlength="600" placeholder="Share your key takeaways, favorite station activities, or demonstrations..."></textarea>
+              </div>
+
+              <!-- Question 5: Suggestions for Improvement -->
+              <div class="question-box">
+                <div class="question-title">5) Do you have any suggestions for improving future workshops? Please let us know 😊</div>
+                <textarea class="form-input" name="q5_suggestions" rows="3" maxlength="600" placeholder="Topics you'd love to see next, logistics, practical stations, etc..."></textarea>
+              </div>
+
+              <div id="form-error-msg" style="color:#c54842;font-size:12px;margin:12px 0;display:none;"></div>
+
+              <button class="button button-primary" id="submit-btn" type="submit" style="width:100%;min-height:46px;font-size:14px;margin-top:10px;">
+                Submit Feedback &amp; Receive Official E-Certificate &rarr;
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificate Modal Container -->
+    <div id="dialog-root"></div>
+
+    <script>
+      let selectedAttendee = null;
+      let debounceTimer = null;
+
+      const nameInput = document.getElementById('attendee-name-input');
+      const resultsBox = document.getElementById('autocomplete-results');
+      const attendeeIdInput = document.getElementById('selected-attendee-id');
+      const selectedBadgeContainer = document.getElementById('selected-badge-container');
+
+      // Live Autocomplete search against 157 Master Attendees
+      nameInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        clearTimeout(debounceTimer);
+        if (query.length < 2) {
+          resultsBox.style.display = 'none';
+          return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+          try {
+            const res = await fetch(`api/attendees.php?search=${encodeURIComponent(query)}`);
+            const json = await res.json();
+            if (json.success && json.data.length > 0) {
+              resultsBox.innerHTML = `
+                <div style="padding:7px 12px;background:#f7f8fc;border-bottom:1px solid #e9eaf1;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;">
+                  Select Your Name Below (${json.data.length} match${json.data.length > 1 ? 'es' : ''}):
+                </div>
+              ` + json.data.map(att => `
+                <div class="autocomplete-item" onclick="selectAttendee('${att.id}', '${att.name.replace(/'/g, "\\'")}', '${att.email}', '${att.team_name || att.team || ''}', '${att.category}', '${att.institution.replace(/'/g, "\\'")}', '${att.phone || ''}')" style="padding:12px 14px;border-bottom:1px solid #f0f1f5;cursor:pointer;">
+                  <div style="display:flex;flex-direction:column;gap:2px;">
+                    <strong style="color:var(--navy);font-size:14px;letter-spacing:.01em;">${att.name.toUpperCase()}</strong>
+                    <small style="color:#6b7280;font-size:11px;">
+                      ${att.institution ? att.institution + ' &bull; ' : ''}Phone: <strong>${att.phone || 'N/A'}</strong> &bull; ${att.email}
+                    </small>
+                  </div>
+                  <span class="team-pill" style="background:#f0f1f7;font-size:10px;font-weight:700;">${att.team_name || 'Assigned'}</span>
+                </div>
+              `).join('');
+              resultsBox.style.display = 'block';
+            } else {
+              resultsBox.innerHTML = '<div style="padding:14px;font-size:12px;color:#7d8199;text-align:center;">No matching registered attendee found. Check the spelling or phone number.</div>';
+              resultsBox.style.display = 'block';
+            }
+          } catch(e) {
+            console.error(e);
+          }
+        }, 150);
+      });
+
+      window.selectAttendee = function(id, name, email, team, category, institution, phone) {
+        selectedAttendee = { id, name, email, team, category, institution, phone };
+        attendeeIdInput.value = id;
+        nameInput.value = name;
+        resultsBox.style.display = 'none';
+
+        selectedBadgeContainer.innerHTML = `
+          <div class="attendee-badge-selected">
+            <div>
+              <strong style="color:var(--navy);font-size:14px;display:block;">${name.toUpperCase()}</strong>
+              <small style="color:#575b77;">
+                ${institution ? institution + ' &bull; ' : ''}Reg ID: <strong>${id}</strong> &bull; ${category}
+              </small>
+            </div>
+            <button type="button" onclick="clearSelectedAttendee()" style="background:none;border:0;color:#c54842;font-size:12px;font-weight:700;cursor:pointer;">Change</button>
+          </div>
+        `;
+        selectedBadgeContainer.style.display = 'block';
+      };
+
+      window.clearSelectedAttendee = function() {
+        selectedAttendee = null;
+        attendeeIdInput.value = '';
+        nameInput.value = '';
+        selectedBadgeContainer.style.display = 'none';
+        nameInput.focus();
+      };
+
+      // Star Pickers with Custom Captions
+      const qCaptions = {
+        q1: ['', '1 – Very Poor', '2 – Poor', '3 – Satisfactory', '4 – Good', '5 – Excellent'],
+        q2: ['', '1 – Not at all', '2 – Slightly', '3 – Moderately', '4 – Significantly', '5 – To a great extent'],
+        q3: ['', '1 – Very Poor', '2 – Poor', '3 – Satisfactory', '4 – Good', '5 – Excellent']
+      };
+
+      function setupStarPicker(containerId, inputId, captionId, qKey) {
+        const container = document.getElementById(containerId);
+        const input = document.getElementById(inputId);
+        const caption = document.getElementById(captionId);
+
+        container.querySelectorAll('.star-choice').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const val = Number(this.dataset.value);
+            input.value = val;
+            if (caption) caption.textContent = qCaptions[qKey][val];
+            container.querySelectorAll('.star-choice').forEach(b => {
+              b.classList.toggle('selected', Number(b.dataset.value) <= val);
+            });
+          });
+        });
+      }
+      setupStarPicker('star-q1', 'q1-val', 'q1-caption', 'q1');
+      setupStarPicker('star-q2', 'q2-val', 'q2-caption', 'q2');
+      setupStarPicker('star-q3', 'q3-val', 'q3-caption', 'q3');
+
+      // Submit Handler
+      document.getElementById('public-feedback-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const errorDiv = document.getElementById('form-error-msg');
+        errorDiv.style.display = 'none';
+
+        if (!selectedAttendee || !attendeeIdInput.value) {
+          errorDiv.textContent = 'Please select your name from the database suggestions.';
+          errorDiv.style.display = 'block';
+          nameInput.focus();
+          return;
+        }
+
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting feedback & generating certificate...';
+
+        const formData = new FormData(this);
+        const payload = {
+          attendeeId: attendeeIdInput.value,
+          q1_overall: Number(formData.get('q1_overall') || 5),
+          q2_hydration: Number(formData.get('q2_hydration') || 5),
+          q3_stations: Number(formData.get('q3_stations') || 5),
+          q4_valuable: (formData.get('q4_valuable') || '').trim(),
+          q5_suggestions: (formData.get('q5_suggestions') || '').trim()
+        };
+
+        try {
+          const res = await fetch('api/feedback.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            const certUrl = json.data && json.data.certUrl ? json.data.certUrl : '';
+            window.latestCertUrl = certUrl;
+            const container = document.getElementById('portal-content');
+            container.innerHTML = `
+              <div class="success-ecert-box">
+                <span class="toast-check" style="width:36px;height:36px;font-size:18px;margin-bottom:12px;">✓</span>
+                <h2 style="color:#11133f;font-size:20px;margin:0 0 8px;">Workshop Feedback Submitted!</h2>
+                <p style="color:#13ae48;font-size:14px;font-weight:700;margin:0 0 10px;">
+                  ✉️ Your official E-Certificate has been emailed to:
+                </p>
+                <div style="background:#ffffff;border:1.5px solid #1fd75a;border-radius:8px;padding:10px 14px;display:inline-block;font-weight:700;color:#11133f;margin-bottom:16px;">
+                  ${selectedAttendee.email}
+                </div>
+                <p style="color:#575b77;font-size:12px;margin:0 0 20px;">
+                  Your customized certificate based on the official event template has been generated. You can download the PDF directly below.
+                </p>
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                  ${certUrl ? `<a href="${certUrl}" download="Certificate_${selectedAttendee.id}.pdf" class="button button-primary" style="min-height:42px;display:inline-flex;align-items:center;gap:6px;">📄 Download Certificate (PDF)</a>` : ''}
+                  <button class="button button-outline" onclick="showCertModal()" type="button" style="min-height:42px;">
+                    Preview Certificate
+                  </button>
+                  <a href="checkin.html" class="button button-outline" style="min-height:42px;">Self Check-In Portal</a>
+                </div>
+              </div>
+            `;
+          } else {
+            errorDiv.textContent = json.error || 'Failed to submit feedback. Please try again.';
+            errorDiv.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Feedback & Receive Official E-Certificate →';
+          }
+        } catch(err) {
+          errorDiv.textContent = 'Network error connecting to MySQL server.';
+          errorDiv.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Feedback & Receive Official E-Certificate →';
+        }
+      });
+
+      window.showCertModal = function() {
+        const root = document.getElementById('dialog-root');
+        root.innerHTML = `
+          <div class="modal-backdrop" onclick="closeCertModal(event)">
+            <div class="modal wide" onclick="event.stopPropagation()">
+              <div class="modal-header">
+                <div><h2 class="modal-title">Official E-Certificate of Participation</h2><p class="modal-description">Issued by Institut Sukan Negara (ISN)</p></div>
+                <button class="modal-close" onclick="document.getElementById('dialog-root').innerHTML=''">&times;</button>
+              </div>
+              <div class="modal-body">
+                <div class="cert-canvas-frame" id="printable-cert">
+                  <div class="cert-inner-border">
+                    <div class="cert-header">
+                      <img src="assets/brand/perform-snd-lockup.png" alt="PERFORM SND" />
+                      <img src="assets/brand/isn-organiser-lockup.png" alt="ISN Organiser" />
+                    </div>
+                    <div class="cert-pre-title">INSTITUT SUKAN NEGARA (ISN) MALAYSIA</div>
+                    <h2 class="cert-title">Certificate of Participation</h2>
+                    <div class="cert-subtitle">This certificate is proudly awarded to</div>
+                    <div class="cert-name">${selectedAttendee.name}</div>
+                    <div style="margin-bottom:12px;">
+                      <span class="team-pill team-pill-pink">${selectedAttendee.team || 'Participant'}</span>
+                      <span style="font-size:12px;color:var(--muted);margin-left:8px;">
+                        ${selectedAttendee.institution ? selectedAttendee.institution + ' &bull; ' : ''}Reg ID: ${selectedAttendee.id}
+                      </span>
+                    </div>
+                    <p class="cert-body-text">
+                      For active participation and completion of the symposium workshop<br />
+                      <strong>"Hydration and Performance Nutrition: Strategies and Practices"</strong><br />
+                      held during <strong>ISN Sports Nutrition Day 2026</strong> on 11 November 2026.
+                    </p>
+                    <div class="cert-signatures">
+                      <div class="cert-sig-block">
+                        <div style="font-family:'Brush Script MT', cursive, sans-serif;font-size:22px;color:#11133f;height:32px;">Ahmad Faizal</div>
+                        <div class="cert-sig-title">Head of Sports Nutrition</div>
+                        <div class="cert-sig-org">Institut Sukan Negara</div>
+                      </div>
+                      <div class="cert-sig-block">
+                        <div style="font-family:'Brush Script MT', cursive, sans-serif;font-size:22px;color:#11133f;height:32px;">Dr. Lim Jin</div>
+                        <div class="cert-sig-title">Director of Performance</div>
+                        <div class="cert-sig-org">PERFORM SND 2026</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="button button-primary" onclick="window.print()">Print / Save PDF</button>
+                <button class="button button-outline" onclick="document.getElementById('dialog-root').innerHTML=''">Close</button>
+              </div>
+            </div>
+          </div>
+        `;
+      };
+
+      window.closeCertModal = function(e) {
+        if (e.target.classList.contains('modal-backdrop')) {
+          document.getElementById('dialog-root').innerHTML = '';
+        }
+      };
+
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.autocomplete-wrap')) {
+          resultsBox.style.display = 'none';
+        }
+      });
+    </script>
+  </body>
+</html>
