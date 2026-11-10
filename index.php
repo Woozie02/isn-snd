@@ -11,9 +11,9 @@ requireAdminAuth();
     <meta name="description" content="ISN Sports Nutrition Day 2026 event management portal" />
     <title>ISN Sports Nutrition Day 2026 | Event Portal</title>
     <link rel="icon" type="image/svg+xml" href="isn-symbol.svg" />
-    <link rel="stylesheet" href="styles.css?v=4" />
+    <link rel="stylesheet" href="styles.css?v=20261110_01" />
     <script src="qrcode.js" defer></script>
-    <script src="app.js?v=8" defer></script>
+    <script src="app.js?v=20261110_01" defer></script>
   </head>
   <body>
     <div class="app-shell">
