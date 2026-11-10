@@ -1432,7 +1432,7 @@ class PdfWriter(PdfDocCommon):
         my_file = False
 
         if stream == "":
-            raise ValueError(f"Output({stream=}) is empty.")
+            raise ValueError(f"Output(stream={stream}) is empty.")
 
         if isinstance(stream, (str, Path)):
             stream = FileIO(stream, "wb")
@@ -3551,7 +3551,7 @@ def _pdf_objectify(obj: Union[dict[str, Any], str, float, list[Any]]) -> PdfObje
     if isinstance(obj, list):
         return ArrayObject(_pdf_objectify(i) for i in obj)
     raise NotImplementedError(
-        f"{type(obj)=} could not be cast to a PdfObject"
+        f"type(obj)={type(obj)} could not be cast to a PdfObject"
     )
 
 
