@@ -61,32 +61,72 @@ async function fetchAPI(endpoint, options = {}) {
   }
 }
 
-async function loadInitialData() {
-  const [statsRes, attendeesRes, feedbackRes, teamsRes] = await Promise.all([
-    fetchAPI('stats.php'),
-    fetchAPI('attendees.php'),
-    fetchAPI('feedback.php'),
-    fetchAPI('teams.php')
-  ]);
+let isSyncing = false;
 
-  if (statsRes && statsRes.success) {
-    registrations = statsRes.data.registrations;
-    checkins = statsRes.data.checkins;
-    feedbackCount = statsRes.data.feedbackCount;
-    avgRating = statsRes.data.avgRating;
-    avgSessionRating = statsRes.data.avgSessionRating;
-  }
-  if (attendeesRes && attendeesRes.success) {
-    attendees = attendeesRes.data;
-  }
-  if (feedbackRes && feedbackRes.success) {
-    feedbackRecords = feedbackRes.data;
-  }
-  if (teamsRes && teamsRes.success) {
-    teams = teamsRes.data;
-  }
+async function loadInitialData(isBackgroundSync = false) {
+  if (isBackgroundSync && isSyncing) return;
+  isSyncing = true;
 
-  render();
+  try {
+    const [statsRes, attendeesRes, feedbackRes, teamsRes] = await Promise.all([
+      fetchAPI('stats.php'),
+      fetchAPI('attendees.php'),
+      fetchAPI('feedback.php'),
+      fetchAPI('teams.php')
+    ]);
+
+    let changed = false;
+
+    if (statsRes && statsRes.success) {
+      if (registrations !== statsRes.data.registrations || checkins !== statsRes.data.checkins || feedbackCount !== statsRes.data.feedbackCount) {
+        changed = true;
+      }
+      registrations = statsRes.data.registrations;
+      checkins = statsRes.data.checkins;
+      feedbackCount = statsRes.data.feedbackCount;
+      avgRating = statsRes.data.avgRating;
+      avgSessionRating = statsRes.data.avgSessionRating;
+    }
+    if (attendeesRes && attendeesRes.success) {
+      if (JSON.stringify(attendees) !== JSON.stringify(attendeesRes.data)) {
+        changed = true;
+      }
+      attendees = attendeesRes.data;
+    }
+    if (feedbackRes && feedbackRes.success) {
+      if (JSON.stringify(feedbackRecords) !== JSON.stringify(feedbackRes.data)) {
+        changed = true;
+      }
+      feedbackRecords = feedbackRes.data;
+    }
+    if (teamsRes && teamsRes.success) {
+      teams = teamsRes.data;
+    }
+
+    // If this is a background auto-refresh:
+    // Only update DOM if changes detected, AND user does not have a modal or input actively focused
+    if (isBackgroundSync) {
+      const modalOpen = document.getElementById('modal-container').classList.contains('active');
+      const activeElement = document.activeElement;
+      const isTyping = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'SELECT');
+
+      if (changed) {
+        if (!modalOpen && !isTyping) {
+          render();
+        } else {
+          // Update navigation counts and counters softly without touching active form
+          const navCount = document.getElementById('nav-attendee-count');
+          if (navCount) navCount.textContent = registrations.toLocaleString();
+        }
+      }
+    } else {
+      render();
+    }
+  } catch (err) {
+    console.warn('Background sync error:', err);
+  } finally {
+    isSyncing = false;
+  }
 }
 
 function escapeHTML(value = '') {
@@ -293,7 +333,7 @@ function renderOverview() {
 function filteredAttendees() {
   const query = attendeeSearch.trim().toLowerCase();
   return attendees.filter((attendee) => {
-    const matchesQuery = !query || [attendee.name, attendee.email, attendee.id, attendee.phone, attendee.category, attendee.teamName].some((value) => String(value || '').toLowerCase().includes(query));
+    const matchesQuery = !query || [attendee.name, attendee.email, attendee.id, attendee.phone, attendee.category, attendee.teamName, attendee.remarks || ''].some((value) => String(value || '').toLowerCase().includes(query));
     const matchesStatus = attendeeFilter === 'all' || (attendeeFilter === 'checked' && attendee.checkedIn) || (attendeeFilter === 'pending' && !attendee.checkedIn);
     const matchesTeam = attendeeTeamFilter === 'all' || attendee.team === attendeeTeamFilter;
     return matchesQuery && matchesStatus && matchesTeam;
@@ -302,7 +342,7 @@ function filteredAttendees() {
 
 function attendeeRows() {
   const rows = filteredAttendees();
-  if (!rows.length) return '<tr><td colspan="9"><div class="no-results">No attendee records match this search.</div></td></tr>';
+  if (!rows.length) return '<tr><td colspan="10"><div class="no-results">No attendee records match this search.</div></td></tr>';
   return rows.map((attendee) => `
     <tr class="clickable-attendee-row" data-action="edit-attendee-row" data-id="${escapeHTML(attendee.id)}" title="Click to edit participant info">
       <td>${personCell(attendee)}</td>
@@ -311,6 +351,7 @@ function attendeeRows() {
       <td>${escapeHTML(attendee.category)}</td>
       <td>${teamBadge(attendee.team, attendee.teamName)}</td>
       <td>${escapeHTML(attendee.registered)}</td>
+      <td><span style="font-size:11px;color:${attendee.remarks ? '#b45309' : '#94a3b8'};background:${attendee.remarks ? '#fef3c7' : 'transparent'};padding:${attendee.remarks ? '2px 6px' : '0'};border-radius:4px;display:inline-block;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHTML(attendee.remarks || '')}">${escapeHTML(attendee.remarks || '—')}</span></td>
       <td>${attendee.checkedIn ? statusBadge('checked', `Checked in${attendee.checkedAt ? ` · ${attendee.checkedAt}` : ''}`) : statusBadge('pending', 'Awaiting arrival')}</td>
       <td>
         ${attendee.checkedIn ? `<button class="row-action muted" type="button" data-action="toggle-checkin" data-id="${escapeHTML(attendee.id)}">Undo</button>` : `<button class="row-action" type="button" data-action="toggle-checkin" data-id="${escapeHTML(attendee.id)}">Check in ${icon('check')}</button>`}
@@ -352,7 +393,7 @@ function renderAttendance() {
     </div>
 
     <section class="stats-grid" aria-label="Attendance summary">
-      ${statCard('Total Roster', registrations.toLocaleString(), '', 'all ticket types', 'users')}
+      ${statCard('Total Roster', registrations.toLocaleString(), '', 'registered attendees', 'users')}
       ${statCard('Checked in', checkins.toLocaleString(), `${attendanceRate}%`, 'of registered attendees', 'check', 'green')}
       ${statCard('Remaining', Math.max(0, registrations - checkins).toLocaleString(), '', 'not checked in yet', 'clock', 'orange')}
       ${statCard('Check-in Desk', 'Ready', '', 'ready to scan or search', 'scan', 'green')}
@@ -387,7 +428,7 @@ function renderAttendance() {
       <div class="table-scroll">
         <table>
           <thead>
-            <tr><th>Participant</th><th>Phone Number</th><th>Reg. ID</th><th>Category</th><th>Team</th><th>Registered</th><th>Status</th><th>Check-In Action</th><th style="width:40px;text-align:center;">Del</th></tr>
+            <tr><th>Participant</th><th>Phone Number</th><th>Reg. ID</th><th>Category</th><th>Team</th><th>Registered</th><th>Remarks</th><th>Status</th><th>Check-In Action</th><th style="width:40px;text-align:center;">Del</th></tr>
           </thead>
           <tbody id="attendee-rows">${attendeeRows()}</tbody>
         </table>
@@ -725,14 +766,18 @@ function openEditAttendeeModal(attendee) {
             <input class="form-input" name="phone" value="${escapeHTML(attendee.phone || '')}" placeholder="012-3456789" />
           </div>
           <div class="form-field">
-            <label class="form-label">Category</label>
-            <input class="form-input" name="category" value="${escapeHTML(attendee.category || '')}" placeholder="VIP / Sponsors / Paid Participants" />
+            <label class="form-label">Category *</label>
+            <select class="select-control form-input" name="category" required>
+              <option value="Participant" ${attendee.category === 'Participant' ? 'selected' : ''}>Participant</option>
+              <option value="Invited Guest (VIP)" ${attendee.category === 'Invited Guest (VIP)' ? 'selected' : ''}>Invited Guest (VIP)</option>
+              <option value="Sponsor" ${attendee.category === 'Sponsor' ? 'selected' : ''}>Sponsor</option>
+            </select>
           </div>
           <div class="form-field full">
             <label class="form-label">Institution / Organization</label>
             <input class="form-input" name="institution" value="${escapeHTML(attendee.institution || '')}" placeholder="e.g. UCSI University / ISN" />
           </div>
-          <div class="form-field">
+          <div class="form-field full">
             <label class="form-label">Assigned Team *</label>
             <select class="select-control form-input" name="team" required>
               <option value="TEAM-1" ${attendee.team === 'TEAM-1' ? 'selected' : ''}>Team Pink</option>
@@ -741,9 +786,9 @@ function openEditAttendeeModal(attendee) {
               <option value="TEAM-4" ${attendee.team === 'TEAM-4' ? 'selected' : ''}>Team Grey</option>
             </select>
           </div>
-          <div class="form-field">
-            <label class="form-label">Ticket Pass</label>
-            <input class="form-input" name="ticket" value="${escapeHTML(attendee.ticket || 'Standard')}" />
+          <div class="form-field full">
+            <label class="form-label">Remarks (In case someone replaces someone)</label>
+            <textarea class="form-input" name="remarks" rows="2" style="resize:vertical;" placeholder="e.g. Replaced original attendee John Doe due to emergency">${escapeHTML(attendee.remarks || '')}</textarea>
           </div>
         </div>
       </div>
@@ -815,18 +860,15 @@ function openAddAttendeeModal() {
         <div class="form-grid">
           <div class="form-field full"><label class="form-label">Full Name *</label><input class="form-input" name="name" required placeholder="e.g. Dr. Siti Aminah" /></div>
           <div class="form-field full"><label class="form-label">Email Address *</label><input class="form-input" name="email" type="email" required placeholder="siti.aminah@example.com" /></div>
+          <div class="form-field"><label class="form-label">Phone Number</label><input class="form-input" name="phone" placeholder="012-3456789" /></div>
           <div class="form-field"><label class="form-label">Category *</label>
             <select class="select-control form-input" name="category" required>
-              <option value="Sports dietitian">Sports dietitian</option>
-              <option value="Athlete">Athlete</option>
-              <option value="Team coach">Team coach</option>
-              <option value="Sports scientist">Sports scientist</option>
-              <option value="Sports science student">Sports science student</option>
-              <option value="Event volunteer">Event volunteer</option>
-              <option value="Media">Media</option>
+              <option value="Participant">Participant</option>
+              <option value="Invited Guest (VIP)">Invited Guest (VIP)</option>
+              <option value="Sponsor">Sponsor</option>
             </select>
           </div>
-          <div class="form-field"><label class="form-label">Assign Team *</label>
+          <div class="form-field full"><label class="form-label">Assign Team *</label>
             <select class="select-control form-input" name="team" required>
               <option value="TEAM-1">Team Pink</option>
               <option value="TEAM-2">Team Purple</option>
@@ -834,20 +876,18 @@ function openAddAttendeeModal() {
               <option value="TEAM-4">Team Grey</option>
             </select>
           </div>
-          <div class="form-field full"><label class="form-label">Ticket Type</label>
-            <select class="select-control form-input" name="ticket">
-              <option value="Standard">Standard Pass</option>
-              <option value="Professional">Professional Pass</option>
-              <option value="Student">Student Pass</option>
-              <option value="Volunteer">Volunteer Pass</option>
-              <option value="Guest">VIP / Guest Pass</option>
-            </select>
+          <div class="form-field full"><label class="form-label">Remarks (In case someone replaces someone)</label>
+            <textarea class="form-input" name="remarks" rows="2" style="resize:vertical;" placeholder="e.g. Replaced original attendee John Doe due to emergency"></textarea>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button class="button button-outline" type="button" onclick="closeModal()">Cancel</button>
         <button class="button button-primary" type="submit">Save to MySQL Database</button>
+      </div>
+    </form>
+  `);
+}
       </div>
     </form>
   `);
@@ -1506,8 +1546,8 @@ async function handleClick(event) {
   }
 
   if (action === 'export-attendees') {
-    const header = ['ID', 'Full Name', 'Phone', 'Institution', 'Email', 'Category', 'Ticket', 'Team ID', 'Team Name', 'Checked In', 'Check In Time', 'Registration Date'];
-    const data = attendees.map(a => [a.id, a.name, a.phone || '', a.institution || '', a.email, a.category, a.ticket, a.team, a.teamName, a.checkedIn ? 'Yes' : 'No', a.checkedAt, a.registered]);
+    const header = ['ID', 'Full Name', 'Phone', 'Institution', 'Email', 'Category', 'Remarks', 'Team ID', 'Team Name', 'Checked In', 'Check In Time', 'Registration Date'];
+    const data = attendees.map(a => [a.id, a.name, a.phone || '', a.institution || '', a.email, a.category, a.remarks || '', a.team, a.teamName, a.checkedIn ? 'Yes' : 'No', a.checkedAt, a.registered]);
     exportCSV('ISN_SND26_Attendees_MySQL.csv', [header, ...data]);
   }
 
@@ -1545,13 +1585,14 @@ async function handleSubmit(event) {
   if (form.dataset.form === 'attendee') {
     const name = String(formData.get('name') || '').trim();
     const email = String(formData.get('email') || '').trim();
-    const category = String(formData.get('category') || '').trim();
-    const ticket = String(formData.get('ticket') || 'Standard').trim();
+    const phone = String(formData.get('phone') || '').trim();
+    const category = String(formData.get('category') || 'Participant').trim();
+    const remarks = String(formData.get('remarks') || '').trim();
     const team = String(formData.get('team') || 'TEAM-1').trim();
 
     const res = await fetchAPI('attendees.php', {
       method: 'POST',
-      body: JSON.stringify({ name, email, category, ticket, team })
+      body: JSON.stringify({ name, email, phone, category, remarks, team })
     });
 
     if (res && res.success) {
@@ -1569,14 +1610,14 @@ async function handleSubmit(event) {
     const name = String(formData.get('name') || '').trim();
     const email = String(formData.get('email') || '').trim();
     const phone = String(formData.get('phone') || '').trim();
-    const category = String(formData.get('category') || '').trim();
+    const category = String(formData.get('category') || 'Participant').trim();
     const institution = String(formData.get('institution') || '').trim();
-    const ticket = String(formData.get('ticket') || 'Standard').trim();
+    const remarks = String(formData.get('remarks') || '').trim();
     const team = String(formData.get('team') || 'TEAM-1').trim();
 
     const res = await fetchAPI('attendees.php', {
       method: 'PUT',
-      body: JSON.stringify({ id, name, email, phone, category, institution, ticket, team })
+      body: JSON.stringify({ id, name, email, phone, category, institution, remarks, team })
     });
 
     if (res && res.success) {
@@ -1724,3 +1765,8 @@ document.addEventListener('keydown', (event) => { if (event.key === 'Escape') cl
 
 // Boot application
 loadInitialData();
+
+// Real-time background sync every 5 seconds (safely supports 6+ simultaneous admins)
+setInterval(() => {
+  loadInitialData(true);
+}, 5000);

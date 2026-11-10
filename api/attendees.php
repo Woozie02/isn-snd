@@ -63,6 +63,7 @@ if ($method === 'GET') {
         $row['registered'] = $row['registered_at'];
         $row['phone'] = !empty($row['phone']) ? $row['phone'] : '';
         $row['institution'] = !empty($row['institution']) ? $row['institution'] : '';
+        $row['remarks'] = !empty($row['remarks']) ? $row['remarks'] : '';
     }
 
     echo json_encode(array('success' => true, 'data' => $rows));
@@ -80,8 +81,9 @@ if ($method === 'POST') {
     $name = isset($input['name']) ? trim($input['name']) : '';
     $email = isset($input['email']) ? trim($input['email']) : '';
     $phone = isset($input['phone']) ? trim($input['phone']) : '';
-    $category = isset($input['category']) ? trim($input['category']) : 'General Participant';
+    $category = isset($input['category']) ? trim($input['category']) : 'Participant';
     $institution = isset($input['institution']) ? trim($input['institution']) : '';
+    $remarks = isset($input['remarks']) ? trim($input['remarks']) : '';
     $ticket = isset($input['ticket']) ? trim($input['ticket']) : 'Standard';
     $team_id = isset($input['team']) ? trim($input['team']) : 'TEAM-1';
 
@@ -100,9 +102,9 @@ if ($method === 'POST') {
     $registered_at = date('d M Y');
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO attendees (id, name, email, phone, category, institution, ticket, team_id, initials, checked_in, checked_at, registered_at) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, '', ?)");
-        $stmt->execute(array($id, $name, $email, $phone, $category, $institution, $ticket, $team_id, $initials, $registered_at));
+        $stmt = $pdo->prepare("INSERT INTO attendees (id, name, email, phone, category, institution, ticket, team_id, initials, checked_in, checked_at, registered_at, remarks) 
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, '', ?, ?)");
+        $stmt->execute(array($id, $name, $email, $phone, $category, $institution, $ticket, $team_id, $initials, $registered_at, $remarks));
 
         echo json_encode(array(
             'success' => true,
@@ -119,6 +121,7 @@ if ($method === 'POST') {
                 'checkedIn' => false,
                 'checkedAt' => '',
                 'registered' => $registered_at,
+                'remarks' => $remarks,
             )
         ));
     } catch (PDOException $e) {
@@ -148,6 +151,7 @@ if ($method === 'PUT') {
     $phone = isset($input['phone']) ? trim($input['phone']) : '';
     $category = isset($input['category']) ? trim($input['category']) : '';
     $institution = isset($input['institution']) ? trim($input['institution']) : '';
+    $remarks = isset($input['remarks']) ? trim($input['remarks']) : '';
     $ticket = isset($input['ticket']) ? trim($input['ticket']) : 'Standard';
     $team_id = isset($input['team']) ? trim($input['team']) : '';
 
@@ -167,11 +171,12 @@ if ($method === 'PUT') {
             phone = ?, 
             category = ?, 
             institution = ?, 
+            remarks = ?, 
             ticket = ?, 
             team_id = IF(? = '', team_id, ?), 
             initials = ? 
             WHERE id = ?");
-        $stmt->execute(array($name, $email, $phone, $category, $institution, $ticket, $team_id, $team_id, $initials, $id));
+        $stmt->execute(array($name, $email, $phone, $category, $institution, $remarks, $ticket, $team_id, $team_id, $initials, $id));
 
         // Fetch updated row
         $fetchStmt = $pdo->prepare("SELECT a.*, t.name as team_name, t.color_code as team_color, t.bg_tint as team_bg 
