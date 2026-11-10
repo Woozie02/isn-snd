@@ -93,8 +93,10 @@ if ($method === 'POST') {
         exit;
     }
 
-    $countStmt = $pdo->query("SELECT COUNT(*) FROM attendees");
-    $nextNum = $countStmt->fetchColumn() + 1;
+    // Calculate next ID based on MAX existing number, not COUNT
+    $maxStmt = $pdo->query("SELECT MAX(CAST(SUBSTRING(id, 7) AS UNSIGNED)) FROM attendees WHERE id LIKE 'ISN-26%'");
+    $maxNum = (int)$maxStmt->fetchColumn();
+    $nextNum = max($maxNum + 1, 1);
     $id = 'ISN-26' . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
 
     $parts = explode(' ', $name);
