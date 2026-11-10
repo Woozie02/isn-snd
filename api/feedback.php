@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/../mailer.php';
+require_once __DIR__ . '/../cert_generator.php';
 
 $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
 
@@ -119,18 +120,21 @@ if ($method === 'POST') {
         $certPdfPath = $certDir . '/' . $certFileName;
         $certUrl = 'assets/certificates/' . $certFileName;
 
-        $pyScript = __DIR__ . '/../generate_cert.py';
-        $pyBinary = (DIRECTORY_SEPARATOR === '\\') ? 'python' : 'python3';
-        $pyCmd = sprintf('%s %s %s %s %s %s %s 2>&1',
-            $pyBinary,
-            escapeshellarg($pyScript),
-            escapeshellarg($attendee['name']),
-            escapeshellarg($attendee['id']),
-            escapeshellarg(!empty($attendee['institution']) ? $attendee['institution'] : ''),
-            escapeshellarg(!empty($attendee['team_name']) ? $attendee['team_name'] : ''),
-            escapeshellarg($certPdfPath)
-        );
-        @exec($pyCmd, $pyOutput, $pyReturn);
+        // Generate PDF Certificate directly using robust built-in PHP generator
+        generateParticipantCertificatePDF($attendee['name'], $certPdfPath);
+
+        // Fallback to Python if needed
+        if (!file_exists($certPdfPath) || filesize($certPdfPath) < 1000) {
+            $pyScript = __DIR__ . '/../generate_cert.py';
+            $pyBinary = (DIRECTORY_SEPARATOR === '\\') ? 'python' : 'python3';
+            $pyCmd = sprintf('%s %s %s %s 2>&1',
+                $pyBinary,
+                escapeshellarg($pyScript),
+                escapeshellarg($attendee['name']),
+                escapeshellarg($certPdfPath)
+            );
+            @exec($pyCmd, $pyOutput, $pyReturn);
+        }
 
         // Dispatch email via MyGovUC SMTP Mailer
         $emailSent = false;
