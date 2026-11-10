@@ -888,10 +888,6 @@ function openAddAttendeeModal() {
     </form>
   `);
 }
-      </div>
-    </form>
-  `);
-}
 
 function openCheckInDeskModal() {
   openModal(`
