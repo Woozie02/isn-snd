@@ -37,6 +37,7 @@ let activePage = 'overview';
 let attendeeSearch = '';
 let attendeeFilter = 'all';
 let attendeeTeamFilter = 'all';
+let attendanceCategoryFilter = 'all';
 let teamSearch = '';
 let teamFilter = 'all';
 let teamAttendanceFilter = 'all';
@@ -376,7 +377,47 @@ function updateAttendeeRows() {
 
 function renderAttendance() {
   const attendanceRate = percent(checkins, registrations);
-  return `<div class="attendance-page">
+    // Category-specific Attendance Card calculations
+    let catAttendees = attendees;
+    if (attendanceCategoryFilter === 'invited') {
+      catAttendees = attendees.filter(a => /invited|vip/i.test(a.category || ''));
+    } else if (attendanceCategoryFilter === 'participant') {
+      catAttendees = attendees.filter(a => /participant/i.test(a.category || '') && !/invited|vip|sponsor/i.test(a.category || ''));
+    } else if (attendanceCategoryFilter === 'sponsor') {
+      catAttendees = attendees.filter(a => /sponsor/i.test(a.category || ''));
+    }
+
+    const catTotal = catAttendees.length;
+    const catChecked = catAttendees.filter(a => a.checkedIn).length;
+    const catPct = percent(catChecked, catTotal);
+
+    const categoryCardHtml = `
+      <article class="stat-card" style="display:flex;flex-direction:column;justify-content:space-between;border:1.5px solid #c7d2fe;background:linear-gradient(135deg, #ffffff 0%, #f8faff 100%);">
+        <div class="stat-card-header" style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="stat-label" style="color:#1e40af;font-weight:700;">Category Check-In</span>
+            <span class="stat-icon" style="background:#e0e7ff;color:#4338ca;width:22px;height:22px;border-radius:6px;">${icon('users')}</span>
+          </div>
+          <select id="attendance-category-filter" class="select-control" style="font-size:11px;padding:2px 8px;min-height:26px;border:1px solid #cbd5e1;background:#fff;border-radius:6px;color:#1e293b;font-weight:600;cursor:pointer;">
+            <option value="all" ${attendanceCategoryFilter === 'all' ? 'selected' : ''}>All Categories</option>
+            <option value="participant" ${attendanceCategoryFilter === 'participant' ? 'selected' : ''}>Paid Participant</option>
+            <option value="invited" ${attendanceCategoryFilter === 'invited' ? 'selected' : ''}>Invited Guest (VIP)</option>
+            <option value="sponsor" ${attendanceCategoryFilter === 'sponsor' ? 'selected' : ''}>Sponsor</option>
+          </select>
+        </div>
+        <div class="stat-card-body" style="margin-top:6px;">
+          <div class="stat-value-row" style="margin-top:2px;display:flex;align-items:baseline;gap:8px;">
+            <span class="stat-value" style="font-size:24px;color:#0f172a;">${catChecked} <span style="font-size:16px;color:#64748b;font-weight:600;">/ ${catTotal}</span></span>
+            <span class="stat-delta" style="background:#dcfce7;color:#15803d;font-weight:800;padding:2px 6px;border-radius:5px;font-size:11px;">${catPct}%</span>
+          </div>
+          <span class="stat-context" style="font-size:11px;color:#64748b;display:block;margin-top:4px;">
+            checked in (${attendanceCategoryFilter === 'all' ? 'overall' : (attendanceCategoryFilter === 'participant' ? 'participants' : (attendanceCategoryFilter === 'invited' ? 'VIP guests' : 'sponsors'))})
+          </span>
+        </div>
+      </article>
+    `;
+
+    return `<div class="attendance-page">
     ${pageHeading('ATTENDANCE', 'Attendee Check-In', 'Find registrations, record arrivals, and track real-time attendance.', `
       <button class="button button-outline" type="button" data-action="export-attendees">${icon('download','button-icon')}Export CSV</button>
       <button class="button button-dark" type="button" data-action="scan-checkin">${icon('scan','button-icon')}Check-in desk</button>
@@ -396,7 +437,7 @@ function renderAttendance() {
       ${statCard('Total Roster', registrations.toLocaleString(), '', 'registered attendees', 'users')}
       ${statCard('Checked in', checkins.toLocaleString(), `${attendanceRate}%`, 'of registered attendees', 'check', 'green')}
       ${statCard('Remaining', Math.max(0, registrations - checkins).toLocaleString(), '', 'not checked in yet', 'clock', 'orange')}
-      ${statCard('Check-in Desk', 'Ready', '', 'ready to scan or search', 'scan', 'green')}
+      ${categoryCardHtml}
     </section>
 
     <div class="toolbar">
@@ -769,7 +810,7 @@ function openEditAttendeeModal(attendee) {
             <label class="form-label">Category *</label>
             <select class="select-control form-input" name="category" required>
               <option value="Participant" ${attendee.category === 'Participant' ? 'selected' : ''}>Participant</option>
-              <option value="Invited Guest (VIP)" ${attendee.category === 'Invited Guest (VIP)' ? 'selected' : ''}>Invited Guest (VIP)</option>
+              <option value="Invited Guest" ${attendee.category === 'Invited Guest' || attendee.category === 'Invited Guest (VIP)' ? 'selected' : ''}>Invited Guest</option>
               <option value="Sponsor" ${attendee.category === 'Sponsor' ? 'selected' : ''}>Sponsor</option>
             </select>
           </div>
@@ -864,7 +905,7 @@ function openAddAttendeeModal() {
           <div class="form-field"><label class="form-label">Category *</label>
             <select class="select-control form-input" name="category" required>
               <option value="Participant">Participant</option>
-              <option value="Invited Guest (VIP)">Invited Guest (VIP)</option>
+              <option value="Invited Guest">Invited Guest</option>
               <option value="Sponsor">Sponsor</option>
             </select>
           </div>
@@ -1704,6 +1745,10 @@ function handleInput(event) {
 }
 
 function handleChange(event) {
+  if (event.target.id === 'attendance-category-filter') {
+    attendanceCategoryFilter = event.target.value;
+    render();
+  }
   if (event.target.id === 'attendee-filter') {
     attendeeFilter = event.target.value;
     updateAttendeeRows();
