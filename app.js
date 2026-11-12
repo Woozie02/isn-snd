@@ -23,6 +23,17 @@ function icon(name, className = '') {
   return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconPaths[name] || iconPaths.grid}</svg>`;
 }
 
+function formatCheckedAt(val) {
+  if (!val) return '';
+  const s = String(val).trim();
+  // If string already contains a date (like '11 Nov', '12 Nov', or a year/dash/slash)
+  if (/[a-zA-Z]{3}|\d{4}|\/|-/.test(s.replace(/AM|PM/i, ''))) {
+    return s;
+  }
+  // Otherwise it's only a time like '8:39 AM' from the event day (11 Nov 2026)
+  return `11 Nov, ${s}`;
+}
+
 // Global Application State connected to MySQL API
 let attendees = [];
 let feedbackRecords = [];
@@ -275,7 +286,7 @@ function renderOverview() {
               ${personCell(a)}
               <div style="text-align:right;">
                 ${teamBadge(a.team, a.teamName)}
-                <div style="font-size:11px;color:var(--muted);margin-top:4px;">${escapeHTML(a.checkedAt || 'Just now')}</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:4px;">${escapeHTML(formatCheckedAt(a.checkedAt) || 'Just now')}</div>
               </div>
             </div>
           `).join('') || '<div class="no-results">No check-ins yet today.</div>'}
@@ -353,7 +364,7 @@ function attendeeRows() {
       <td>${teamBadge(attendee.team, attendee.teamName)}</td>
       <td>${escapeHTML(attendee.registered)}</td>
       <td><span style="font-size:11px;color:${attendee.remarks ? '#b45309' : '#94a3b8'};background:${attendee.remarks ? '#fef3c7' : 'transparent'};padding:${attendee.remarks ? '2px 6px' : '0'};border-radius:4px;display:inline-block;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHTML(attendee.remarks || '')}">${escapeHTML(attendee.remarks || '—')}</span></td>
-      <td>${attendee.checkedIn ? statusBadge('checked', `Checked in${attendee.checkedAt ? ` · ${attendee.checkedAt}` : ''}`) : statusBadge('pending', 'Awaiting arrival')}</td>
+      <td>${attendee.checkedIn ? statusBadge('checked', `Checked in${attendee.checkedAt ? ` · ${formatCheckedAt(attendee.checkedAt)}` : ''}`) : statusBadge('pending', 'Awaiting arrival')}</td>
       <td>
         ${attendee.checkedIn ? `<button class="row-action muted" type="button" data-action="toggle-checkin" data-id="${escapeHTML(attendee.id)}">Undo</button>` : `<button class="row-action" type="button" data-action="toggle-checkin" data-id="${escapeHTML(attendee.id)}">Check in ${icon('check')}</button>`}
       </td>
@@ -1148,8 +1159,8 @@ function openCheckInVerificationModal(att) {
         </div>
 
         <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 16px;">
-          <div style="font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Arrival Check-In Time</div>
-          <div style="font-size:15px;font-weight:700;color:#15803d;">${escapeHTML(att.checkedAt || 'Recorded')}</div>
+          <div style="font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Arrival Check-In Date & Time</div>
+          <div style="font-size:15px;font-weight:700;color:#15803d;">${escapeHTML(formatCheckedAt(att.checkedAt) || 'Recorded')}</div>
         </div>
 
         <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 16px;grid-column:1/-1;">
@@ -1583,8 +1594,8 @@ async function handleClick(event) {
   }
 
   if (action === 'export-attendees') {
-    const header = ['ID', 'Full Name', 'Phone', 'Institution', 'Email', 'Category', 'Remarks', 'Team ID', 'Team Name', 'Checked In', 'Check In Time', 'Registration Date'];
-    const data = attendees.map(a => [a.id, a.name, a.phone || '', a.institution || '', a.email, a.category, a.remarks || '', a.team, a.teamName, a.checkedIn ? 'Yes' : 'No', a.checkedAt, a.registered]);
+    const header = ['ID', 'Full Name', 'Phone', 'Institution', 'Email', 'Category', 'Remarks', 'Team ID', 'Team Name', 'Checked In', 'Check In Date & Time', 'Registration Date'];
+    const data = attendees.map(a => [a.id, a.name, a.phone || '', a.institution || '', a.email, a.category, a.remarks || '', a.team, a.teamName, a.checkedIn ? 'Yes' : 'No', formatCheckedAt(a.checkedAt), a.registered]);
     exportCSV('ISN_SND26_Attendees_MySQL.csv', [header, ...data]);
   }
 

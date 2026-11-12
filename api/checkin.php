@@ -15,7 +15,7 @@ if ($method === 'POST') {
     $action = isset($input['action']) ? $input['action'] : 'checkin';
 
     $checked_in = ($action === 'checkin') ? 1 : 0;
-    $checked_at = ($action === 'checkin') ? date('g:i A') : '';
+    $checked_at = ($action === 'checkin') ? date('d M Y, g:i A') : '';
 
     $stmt = $pdo->prepare("UPDATE attendees SET checked_in = ?, checked_at = ? WHERE id = ?");
     $stmt->execute(array($checked_in, $checked_at, $id));

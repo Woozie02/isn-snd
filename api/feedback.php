@@ -116,9 +116,10 @@ if ($method === 'POST') {
             $submitted_at
         ));
 
-        // Mark attendee as checked-in automatically
-        $pdo->prepare("UPDATE attendees SET checked_in = 1, checked_at = IF(checked_at = '', ?, checked_at) WHERE id = ?")
-            ->execute(array(date('g:i A'), $attendee_id));
+        // If attendee was not previously checked in at the desk, record auto-checkin date & time
+        $auto_checkin_time = date('d M Y, g:i A');
+        $pdo->prepare("UPDATE attendees SET checked_in = 1, checked_at = IF(checked_at = '' OR checked_at IS NULL, ?, checked_at) WHERE id = ?")
+            ->execute(array($auto_checkin_time, $attendee_id));
 
         $attStmt = $pdo->prepare("SELECT a.*, t.name as team_name, t.color_code as team_color, t.bg_tint as team_bg 
                                   FROM attendees a 
