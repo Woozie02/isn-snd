@@ -23,6 +23,15 @@ function icon(name, className = '') {
   return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconPaths[name] || iconPaths.grid}</svg>`;
 }
 
+function renderRemarkBadge(remarks) {
+  if (!remarks) return '<span style="color:#94a3b8;font-size:11px;">—</span>';
+  const isFlagged = remarks.toLowerCase().includes('did not attend') || remarks.toLowerCase().includes('not attend');
+  if (isFlagged) {
+    return `<span style="font-size:11px;font-weight:700;color:#991b1b;background:#fee2e2;border:1px solid #f87171;padding:3px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;max-width:260px;line-height:1.3;" title="${escapeHTML(remarks)}">⚠️ ${escapeHTML(remarks)}</span>`;
+  }
+  return `<span style="font-size:11px;color:#b45309;background:#fef3c7;border:1px solid #fde68a;padding:2px 6px;border-radius:4px;display:inline-block;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHTML(remarks)}">${escapeHTML(remarks)}</span>`;
+}
+
 function formatCheckedAt(val) {
   if (!val) return '';
   const s = String(val).trim();
@@ -363,7 +372,7 @@ function attendeeRows() {
       <td>${escapeHTML(attendee.category)}</td>
       <td>${teamBadge(attendee.team, attendee.teamName)}</td>
       <td>${escapeHTML(attendee.registered)}</td>
-      <td><span style="font-size:11px;color:${attendee.remarks ? '#b45309' : '#94a3b8'};background:${attendee.remarks ? '#fef3c7' : 'transparent'};padding:${attendee.remarks ? '2px 6px' : '0'};border-radius:4px;display:inline-block;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHTML(attendee.remarks || '')}">${escapeHTML(attendee.remarks || '—')}</span></td>
+      <td>${renderRemarkBadge(attendee.remarks)}</td>
       <td>${attendee.checkedIn ? statusBadge('checked', `Checked in${attendee.checkedAt ? ` · ${formatCheckedAt(attendee.checkedAt)}` : ''}`) : statusBadge('pending', 'Awaiting arrival')}</td>
       <td>
         ${attendee.checkedIn ? `<button class="row-action muted" type="button" data-action="toggle-checkin" data-id="${escapeHTML(attendee.id)}">Undo</button>` : `<button class="row-action" type="button" data-action="toggle-checkin" data-id="${escapeHTML(attendee.id)}">Check in ${icon('check')}</button>`}
@@ -639,7 +648,7 @@ function filteredFeedbackAttendees() {
 
 function feedbackRows() {
   const rows = filteredFeedbackAttendees();
-  if (!rows.length) return '<tr><td colspan="7"><div class="no-results">No feedback records match this search.</div></td></tr>';
+  if (!rows.length) return '<tr><td colspan="8"><div class="no-results">No feedback records match this search.</div></td></tr>';
   return rows.map((attendee) => {
     const feedback = feedbackFor(attendee.id);
     return `<tr>
@@ -649,6 +658,7 @@ function feedbackRows() {
       <td>${feedback ? escapeHTML(feedback.date) : '—'}</td>
       <td>${feedback ? `<span style="color:#d89d2c;letter-spacing:1px">${'★'.repeat(feedback.rating)}${'☆'.repeat(5 - feedback.rating)}</span><span style="color:#777b91;margin-left:6px">${feedback.rating}.0</span>` : '—'}</td>
       <td>${feedback ? statusBadge('received', 'Received') : statusBadge('pending', 'Awaiting response')}</td>
+      <td>${renderRemarkBadge(attendee.remarks)}</td>
       <td>
         <div style="display:flex;gap:6px;align-items:center;">
           <button class="row-action" type="button" data-action="preview-cert" data-id="${escapeHTML(attendee.id)}" title="Preview participant certificate PDF">Preview Certificate</button>
@@ -727,7 +737,7 @@ function renderFeedback() {
           <div class="table-scroll">
             <table>
               <thead>
-                <tr><th>Participant</th><th>Team</th><th>Attendance</th><th>Submitted</th><th>Rating</th><th>Status</th><th>Action</th></tr>
+                <tr><th>Participant</th><th>Team</th><th>Attendance</th><th>Submitted</th><th>Rating</th><th>Status</th><th>Remarks / Audit</th><th>Action</th></tr>
               </thead>
               <tbody id="feedback-rows">${feedbackRows()}</tbody>
             </table>
