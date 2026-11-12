@@ -1,0 +1,7 @@
+# Generated certificates cache
+assets/certificates/*.pdf
+assets/certificates/*.png
+
+# Scratch & temporary files
+scratch/
+*.log
