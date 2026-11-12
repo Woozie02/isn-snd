@@ -404,9 +404,12 @@
                   Select Your Name Below (${json.data.length} match${json.data.length > 1 ? 'es' : ''}):
                 </div>
               ` + json.data.map(att => `
-                <div class="autocomplete-item" onclick="selectAttendee('${att.id}', '${att.name.replace(/'/g, "\\'")}', '${att.email}', '${att.team_name || att.team || ''}', '${att.category}', '${att.institution.replace(/'/g, "\\'")}', '${att.phone || ''}')" style="padding:12px 14px;border-bottom:1px solid #f0f1f5;cursor:pointer;">
+                <div class="autocomplete-item" onclick="selectAttendee('${att.id}', '${att.name.replace(/'/g, "\\'")}', '${att.email}', '${att.team_name || att.team || ''}', '${att.category}', '${(att.institution || '').replace(/'/g, "\\'")}', '${att.phone || ''}', ${att.checkedIn ? 'true' : 'false'})" style="padding:12px 14px;border-bottom:1px solid #f0f1f5;cursor:pointer;">
                   <div style="display:flex;flex-direction:column;gap:2px;">
-                    <strong style="color:var(--navy);font-size:14px;letter-spacing:.01em;">${att.name.toUpperCase()}</strong>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <strong style="color:var(--navy);font-size:14px;letter-spacing:.01em;">${att.name.toUpperCase()}</strong>
+                      ${att.checkedIn ? '<span style="background:#dcfce7;color:#15803d;border:1px solid #86efac;font-size:10px;font-weight:800;padding:2px 6px;border-radius:4px;">✓ Checked In</span>' : '<span style="background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;font-size:10px;font-weight:800;padding:2px 6px;border-radius:4px;">✕ Not Checked In</span>'}
+                    </div>
                     <small style="color:#6b7280;font-size:11px;">
                       ${att.institution ? att.institution + ' &bull; ' : ''}Phone: <strong>${att.phone || 'N/A'}</strong> &bull; ${att.email}
                     </small>
@@ -425,16 +428,27 @@
         }, 150);
       });
 
-      window.selectAttendee = function(id, name, email, team, category, institution, phone) {
-        selectedAttendee = { id, name, email, team, category, institution, phone };
+      window.selectAttendee = function(id, name, email, team, category, institution, phone, checkedIn) {
+        selectedAttendee = { id, name, email, team, category, institution, phone, checkedIn };
         attendeeIdInput.value = id;
         nameInput.value = name;
         resultsBox.style.display = 'none';
 
+        const errorDiv = document.getElementById('form-error-msg');
+        if (!checkedIn) {
+          errorDiv.innerHTML = `<strong>Attendance Notice:</strong> Our records indicate that <strong>${name.toUpperCase()}</strong> was not checked in at the event registration desk. Feedback submission and certificates are only issued to checked-in attendees. Please contact the ISN organizer if you were present.`;
+          errorDiv.style.display = 'block';
+        } else {
+          errorDiv.style.display = 'none';
+        }
+
         selectedBadgeContainer.innerHTML = `
-          <div class="attendee-badge-selected">
+          <div class="attendee-badge-selected" style="${!checkedIn ? 'border-color:#fca5a5;background:#fef2f2;' : ''}">
             <div>
-              <strong style="color:var(--navy);font-size:14px;display:block;">${name.toUpperCase()}</strong>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <strong style="color:var(--navy);font-size:14px;">${name.toUpperCase()}</strong>
+                ${checkedIn ? '<span style="background:#dcfce7;color:#15803d;border:1px solid #86efac;font-size:10px;font-weight:800;padding:1px 6px;border-radius:4px;">✓ Checked In</span>' : '<span style="background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;font-size:10px;font-weight:800;padding:1px 6px;border-radius:4px;">✕ Not Checked In</span>'}
+              </div>
               <small style="color:#575b77;">
                 ${institution ? institution + ' &bull; ' : ''}Reg ID: <strong>${id}</strong> &bull; ${category}
               </small>
@@ -498,6 +512,13 @@
           errorDiv.textContent = 'Please select your participant record by typing your name or phone number first.';
           errorDiv.style.display = 'block';
           nameInput.focus();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        if (!selectedAttendee.checkedIn) {
+          errorDiv.innerHTML = `<strong>Attendance Required:</strong> Submission blocked. Our records show that <strong>${selectedAttendee.name.toUpperCase()}</strong> was not checked in at the event attendance desk. Feedback and certificates are reserved strictly for confirmed attendees.`;
+          errorDiv.style.display = 'block';
           window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
         }

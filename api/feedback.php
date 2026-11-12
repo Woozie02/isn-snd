@@ -82,6 +82,30 @@ if ($method === 'POST') {
         exit;
     }
 
+    // Verify attendee existence and check-in status
+    $attStmt = $pdo->prepare("SELECT a.*, t.name as team_name, t.color_code as team_color, t.bg_tint as team_bg 
+                              FROM attendees a 
+                              LEFT JOIN teams t ON a.team_id = t.id 
+                              WHERE a.id = ?");
+    $attStmt->execute(array($attendee_id));
+    $attendee = $attStmt->fetch();
+
+    if (!$attendee) {
+        http_response_code(404);
+        echo json_encode(array('error' => 'Attendee record not found.'));
+        exit;
+    }
+
+    // Attendance enforcement: Must be checked in at the event desk
+    if (empty($attendee['checked_in']) || (int)$attendee['checked_in'] !== 1) {
+        http_response_code(403);
+        echo json_encode(array(
+            'error' => 'Feedback submission is only available for participants who checked in at the event attendance desk. Please contact the organizer if you attended.',
+            'not_checked_in' => true
+        ));
+        exit;
+    }
+
     // Check if feedback already submitted
     $checkStmt = $pdo->prepare("SELECT id FROM feedback WHERE attendee_id = ?");
     $checkStmt->execute(array($attendee_id));
@@ -115,18 +139,6 @@ if ($method === 'POST') {
             $responses_json, 
             $submitted_at
         ));
-
-        // If attendee was not previously checked in at the desk, record auto-checkin date & time
-        $auto_checkin_time = date('d M Y, g:i A');
-        $pdo->prepare("UPDATE attendees SET checked_in = 1, checked_at = IF(checked_at = '' OR checked_at IS NULL, ?, checked_at) WHERE id = ?")
-            ->execute(array($auto_checkin_time, $attendee_id));
-
-        $attStmt = $pdo->prepare("SELECT a.*, t.name as team_name, t.color_code as team_color, t.bg_tint as team_bg 
-                                  FROM attendees a 
-                                  LEFT JOIN teams t ON a.team_id = t.id 
-                                  WHERE a.id = ?");
-        $attStmt->execute(array($attendee_id));
-        $attendee = $attStmt->fetch();
 
         // Generate PDF Certificate from Template
         $certDir = __DIR__ . '/../assets/certificates';
