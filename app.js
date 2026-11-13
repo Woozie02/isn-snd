@@ -1610,24 +1610,85 @@ async function handleClick(event) {
   }
 
   if (action === 'export-feedback') {
-    const header = ['Feedback ID', 'Attendee ID', 'Name', 'Category', 'Institution', 'Phone', 'Email', 'Team', 'Q1 Overall Experience (1-5)', 'Q2 Hydration Understanding (1-5)', 'Q3 Station Activities (1-5)', 'Q4 Most Valuable / Enjoyable', 'Q5 Future Suggestions', 'Submitted Date'];
-    const data = feedbackRecords.map(f => [
-      f.id, 
-      f.attendeeId, 
-      f.label, 
-      f.category || '', 
-      f.institution || '', 
-      f.phone || '', 
-      f.email || '', 
-      f.teamName, 
-      f.q1_overall || f.rating || 5, 
-      f.q2_hydration || f.sessionRating || 5, 
-      f.q3_stations || 5, 
-      f.q4_valuable || f.comment || '', 
-      f.q5_suggestions || '', 
-      f.date
-    ]);
-    exportCSV('ISN_SND26_Feedback_Responses_MySQL.csv', [header, ...data]);
+    const header = [
+      'Feedback ID', 
+      'Attendee ID', 
+      'Name', 
+      'Category', 
+      'Institution', 
+      'Phone', 
+      'Email', 
+      'Team', 
+      'Remarks / Audit',
+      'S1 Q1',
+      'S2 Q1', 
+      'S2 Q2', 
+      'S2 Q3', 
+      'S2 Q4', 
+      'S2 Q5', 
+      'S2 Q6',
+      'S3 Q1 Rating', 
+      'S3 Q1 Feedback', 
+      'S3 Q2 Rating', 
+      'S3 Q2 Feedback', 
+      'S3 Q3 Rating', 
+      'S3 Q3 Feedback',
+      'S4 Q1', 
+      'S4 Q2', 
+      'S4 Q3', 
+      'S4 Q4', 
+      'S4 Q5',
+      'S5 Q1', 
+      'S5 Q2', 
+      'S5 Q3', 
+      'S5 Q4',
+      'Submitted Date'
+    ];
+
+    const data = feedbackRecords.map(f => {
+      let r = f.responses || {};
+      if (typeof r === 'string') {
+        try { r = JSON.parse(r); } catch (e) { r = {}; }
+      }
+      const att = attendees.find(a => a.id === f.attendeeId) || {};
+
+      return [
+        f.id || '',
+        f.attendeeId || '',
+        f.label || att.name || '',
+        f.category || att.category || '',
+        f.institution || att.institution || '',
+        f.phone || att.phone || '',
+        f.email || att.email || '',
+        f.teamName || att.teamName || '',
+        att.remarks || '',
+        r.sec1_first_time || '',
+        r.sec2_q1 || '',
+        r.sec2_q2 || '',
+        r.sec2_q3 || '',
+        r.sec2_q4 || '',
+        r.sec2_q5 || '',
+        r.sec2_q6 || '',
+        r.sec3_s1_rating || '',
+        r.sec3_s1_feedback || '',
+        r.sec3_s2_rating || '',
+        r.sec3_s2_feedback || '',
+        r.sec3_forum_rating || '',
+        r.sec3_forum_feedback || '',
+        r.sec4_q1 || f.q1_overall || '',
+        r.sec4_q2 || f.q2_hydration || '',
+        r.sec4_q3 || f.q3_stations || '',
+        r.sec4_q4 || f.q4_valuable || '',
+        r.sec4_q5 || f.q5_suggestions || '',
+        r.sec5_q1 || f.rating || '',
+        r.sec5_q2 || '',
+        r.sec5_q3 || '',
+        r.sec5_q4 || '',
+        f.created_at || f.date || ''
+      ];
+    });
+
+    exportCSV('ISN_SND26_Feedback_All_Responses.csv', [header, ...data]);
   }
 
   if (action === 'notifications') toast('Live MySQL database connected. All tables synchronized.');
