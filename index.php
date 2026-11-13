@@ -13,7 +13,7 @@ requireAdminAuth();
     <link rel="icon" type="image/svg+xml" href="isn-symbol.svg" />
     <link rel="stylesheet" href="styles.css?v=20261113_01" />
     <script src="qrcode.js" defer></script>
-    <script src="app.js?v=20261113_01" defer></script>
+    <script src="app.js?v=20261113_02" defer></script>
   </head>
   <body>
     <div class="app-shell">

@@ -135,114 +135,25 @@
       function renderCheckInForm() {
         const root = document.getElementById('checkin-view-root');
         root.innerHTML = `
-          <h2 style="color:var(--navy);font-size:18px;margin-bottom:6px;">Find Your Registration</h2>
-          <p style="color:var(--muted);font-size:12px;margin-bottom:18px;">
-            Enter your mobile phone number (or name) to verify your registration and complete arrival check-in.
-          </p>
-
-          <form id="self-checkin-form">
-            <div class="autocomplete-wrap" style="position:relative;margin-bottom:16px;">
-              <label class="form-label" style="display:block;margin-bottom:6px;">Mobile Phone Number or Full Name *</label>
-              <input type="text" id="phone-input" class="form-input" placeholder="e.g. 013-8878990 or 0138878990 or Name" autocomplete="off" required autofocus />
-              <div style="font-size:11px;color:#64748b;margin-top:4px;">
-                You can type with dashes (<code>013-8878990</code>), without dashes (<code>0138878990</code>), or by name.
-              </div>
-              <input type="hidden" id="selected-att-id" required />
-              <div id="autocomplete-list" class="autocomplete-list" style="display:none;max-height:280px;z-index:9999;box-shadow:0 18px 36px rgba(17,19,63,.22);"></div>
-              <div id="selected-preview-box" style="display:none;margin-top:10px;"></div>
+          <div style="text-align:center;padding:24px 12px;">
+            <div style="width:56px;height:56px;border-radius:50%;background:#fee2e2;color:#dc2626;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;">
+              🔒
             </div>
-
-            <div id="checkin-error-msg" style="color:#c54842;font-size:12px;margin-bottom:12px;display:none;"></div>
-
-            <button class="button button-primary" id="checkin-btn" type="submit" style="width:100%;min-height:46px;font-size:14px;margin-top:10px;" disabled>
-              Confirm My Check-In &rarr;
-            </button>
-          </form>
+            <h2 style="color:var(--navy);font-size:20px;font-weight:800;margin-bottom:8px;">Check-In is Closed</h2>
+            <p style="color:#64748b;font-size:14px;line-height:1.5;max-width:440px;margin:0 auto 20px;">
+              The ISN Sports Nutrition Day 2026 event took place on <strong>11 November 2026</strong>. Arrival registration and desk check-in have officially concluded.
+            </p>
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 18px;display:inline-block;text-align:left;max-width:420px;font-size:12px;color:#475569;">
+              <strong>Need Assistance?</strong><br>
+              If you attended the event or require information regarding your certificate, please contact the ISN Secretariat directly.
+            </div>
+            <div style="margin-top:24px;">
+              <a href="feedback.html" class="button button-outline" style="min-height:40px;font-size:13px;display:inline-flex;align-items:center;gap:6px;">
+                Go to Feedback Form &rarr;
+              </a>
+            </div>
+          </div>
         `;
-
-        const phoneInput = document.getElementById('phone-input');
-        const hiddenId = document.getElementById('selected-att-id');
-        const dropdown = document.getElementById('autocomplete-list');
-        const preview = document.getElementById('selected-preview-box');
-        const btn = document.getElementById('checkin-btn');
-
-        phoneInput.addEventListener('input', function() {
-          const raw = this.value.trim();
-          clearTimeout(debounceTimer);
-          if (raw.length < 2) {
-            dropdown.style.display = 'none';
-            return;
-          }
-
-          debounceTimer = setTimeout(async () => {
-            try {
-              const res = await fetch(`api/attendees.php?search=${encodeURIComponent(raw)}`);
-              const json = await res.json();
-              if (json.success && json.data.length > 0) {
-                dropdown.innerHTML = `
-                  <div style="padding:6px 12px;background:#f3f4f8;border-bottom:1px solid #e5e7eb;font-size:11px;font-weight:700;color:#4b5278;">
-                    CHOOSE YOUR NAME (${json.data.length} match${json.data.length > 1 ? 'es' : ''}):
-                  </div>
-                ` + json.data.map(att => `
-                  <div class="autocomplete-item" onclick="chooseCandidate('${att.id}', '${att.name.replace(/'/g, "\\'")}', '${att.email}', '${att.phone || ''}', '${att.category}', '${att.team || ''}', '${att.team_name || att.teamName || ''}')" style="padding:10px 14px;border-bottom:1px solid #f0f1f5;cursor:pointer;">
-                    <div>
-                      <strong style="color:var(--navy);font-size:13px;letter-spacing:.02em;">${att.name.toUpperCase()}</strong>
-                      <small style="color:#6b7280;font-size:11px;">Phone: <strong>${att.phone || 'N/A'}</strong> &bull; ${att.email}</small>
-                    </div>
-                    <span class="team-pill" style="background:#f0f1f7;font-size:10px;">${att.team_name || 'Assigned'}</span>
-                  </div>
-                `).join('');
-                dropdown.style.display = 'block';
-              } else {
-                dropdown.innerHTML = '<div style="padding:12px;font-size:12px;color:#7d8199;text-align:center;">No registration found with this phone number or name.</div>';
-                dropdown.style.display = 'block';
-              }
-            } catch(e) {
-              console.error(e);
-            }
-          }, 150);
-        });
-
-        document.getElementById('self-checkin-form').addEventListener('submit', async function(e) {
-          e.preventDefault();
-          const errorMsg = document.getElementById('checkin-error-msg');
-          errorMsg.style.display = 'none';
-
-          if (!selectedCandidate || !hiddenId.value) {
-            errorMsg.textContent = 'Please select your name from the search suggestions.';
-            errorMsg.style.display = 'block';
-            return;
-          }
-
-          btn.disabled = true;
-          btn.textContent = 'Recording check-in...';
-
-          try {
-            const res = await fetch('api/checkin.php', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id: hiddenId.value, action: 'checkin' })
-            });
-            const json = await res.json();
-
-            if (json.success) {
-              const checkedAttendee = json.data;
-              // Persist in localStorage so refreshing preserves display
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(checkedAttendee));
-              renderConfirmedState(checkedAttendee);
-            } else {
-              errorMsg.textContent = json.error || 'Check-in failed. Please contact the registration desk.';
-              errorMsg.style.display = 'block';
-              btn.disabled = false;
-              btn.textContent = 'Confirm My Check-In →';
-            }
-          } catch(err) {
-            errorMsg.textContent = 'Server error. Please try again.';
-            errorMsg.style.display = 'block';
-            btn.disabled = false;
-            btn.textContent = 'Confirm My Check-In →';
-          }
-        });
       }
 
       window.chooseCandidate = function(id, name, email, phone, category, team, teamName) {

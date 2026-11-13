@@ -212,8 +212,8 @@ function renderOverview() {
 
   return `<div class="overview-page">
     ${pageHeading('ISN SPORTS NUTRITION DAY 2026', 'Event Overview', 'Live event operations dashboard powered by MySQL.', `
-      <button class="button button-dark" type="button" data-action="scan-checkin">${icon('scan','button-icon')}Open check-in desk</button>
-      <button class="button button-primary" type="button" data-action="create-attendee">${icon('plus','button-icon')}Register attendee</button>
+      <button class="button button-outline" type="button" data-action="export-attendees">${icon('download','button-icon')}Export attendance</button>
+      <button class="button button-primary" type="button" data-action="export-feedback">${icon('download','button-icon')}Export feedback</button>
     `)}
 
     <section class="event-hero" aria-label="Event summary">
@@ -328,9 +328,9 @@ function renderOverview() {
       </div>
       <div class="panel-body">
         <div class="quick-actions">
-          <div class="quick-action-card" data-action="scan-checkin">
-            <span class="quick-action-icon">${icon('scan')}</span>
-            <div class="quick-action-copy"><strong>Open Check-In Desk</strong><p>Scan registration ID or search participant arrivals.</p></div>
+          <div class="quick-action-card" data-action="export-attendees">
+            <span class="quick-action-icon">${icon('download')}</span>
+            <div class="quick-action-copy"><strong>Export Attendance CSV</strong><p>Download complete roster & attendance records.</p></div>
           </div>
           <div class="quick-action-card" data-action="create-attendee">
             <span class="quick-action-icon">${icon('plus')}</span>
@@ -375,7 +375,7 @@ function attendeeRows() {
       <td>${renderRemarkBadge(attendee.remarks)}</td>
       <td>${attendee.checkedIn ? statusBadge('checked', `Checked in${attendee.checkedAt ? ` · ${formatCheckedAt(attendee.checkedAt)}` : ''}`) : statusBadge('pending', 'Awaiting arrival')}</td>
       <td>
-        ${attendee.checkedIn ? `<button class="row-action muted" type="button" data-action="toggle-checkin" data-id="${escapeHTML(attendee.id)}">Undo</button>` : `<button class="row-action" type="button" data-action="toggle-checkin" data-id="${escapeHTML(attendee.id)}">Check in ${icon('check')}</button>`}
+        ${attendee.checkedIn ? `<span style="font-size:11px;color:#15803d;font-weight:700;">Recorded</span>` : `<span style="font-size:11px;color:#94a3b8;font-weight:600;">Absent (Closed)</span>`}
       </td>
       <td style="text-align:center;">
         <button class="row-delete-btn" type="button" data-action="delete-attendee-row" data-id="${escapeHTML(attendee.id)}" title="Delete participant record" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;width:28px;height:28px;cursor:pointer;font-weight:900;font-size:13px;display:inline-flex;align-items:center;justify-content:center;transition:all .15s ease;">
@@ -438,19 +438,18 @@ function renderAttendance() {
     `;
 
     return `<div class="attendance-page">
-    ${pageHeading('ATTENDANCE', 'Attendee Check-In', 'Find registrations, record arrivals, and track real-time attendance.', `
+    ${pageHeading('ATTENDANCE', 'Attendee Attendance (Finalized)', 'Event concluded on 11 Nov 2026. Attendance records are locked and finalized.', `
       <button class="button button-outline" type="button" data-action="export-attendees">${icon('download','button-icon')}Export CSV</button>
-      <button class="button button-dark" type="button" data-action="scan-checkin">${icon('scan','button-icon')}Check-in desk</button>
       <button class="button button-primary" type="button" data-action="create-attendee">${icon('plus','button-icon')}Add attendee</button>
     `)}
 
-    <div class="module-banner">
-      <span class="module-banner-icon">${icon('check')}</span>
+    <div class="module-banner" style="background:#fef2f2;border-color:#fecaca;">
+      <span class="module-banner-icon" style="background:#fee2e2;color:#dc2626;">🔒</span>
       <div class="module-banner-copy">
-        <strong>Check-in desk connected to MySQL</strong>
-        <p>Real-time check-in updates are synced with XAMPP MySQL database.</p>
+        <strong style="color:#991b1b;">Attendance Check-In Closed</strong>
+        <p style="color:#7f1d1d;">The event date has passed (11 Nov 2026). Check-in desk operations are closed and existing attendee attendance is frozen.</p>
       </div>
-      <span class="status-badge checked"><span class="status-dot"></span>Database Live</span>
+      <span class="status-badge" style="background:#fee2e2;color:#991b1b;"><span class="status-dot" style="background:#dc2626;"></span>Finalized</span>
     </div>
 
     <section class="stats-grid" aria-label="Attendance summary">
@@ -1548,7 +1547,9 @@ async function handleClick(event) {
   const action = trigger.dataset.action;
 
   if (action === 'create-attendee') openAddAttendeeModal();
-  if (action === 'scan-checkin') openCheckInDeskModal();
+  if (action === 'scan-checkin') {
+    toast('Event has concluded (11 Nov 2026). Attendance desk check-in is closed.');
+  }
   if (action === 'open-feedback-form') openFeedbackFormModal();
   if (action === 'show-qr') openQRCodeModal();
   if (action === 'close-modal' || action === 'backdrop-close') closeModal();
@@ -1556,11 +1557,7 @@ async function handleClick(event) {
 
   if (action === 'toggle-checkin') {
     event.stopPropagation();
-    const id = trigger.dataset.id;
-    const attendee = attendees.find((a) => a.id === id);
-    if (!attendee) return;
-    if (attendee.checkedIn) await undoCheckIn(attendee);
-    else await checkInAttendee(attendee);
+    toast('Event has passed (11 Nov 2026). Attendance check-in is now finalized and locked.');
     return;
   }
 
